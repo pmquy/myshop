@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.box-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card {
+  @apply rounded-lg bg-white-1  text-black-1 box-shadow
+}
+
+.normal-card {
+  @apply rounded-lg bg-white-1  text-black-1 transition-[box-shadow]
+}
+
+.normal-card:hover {
+  box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
+  @apply cursor-pointer select-none
+}
+
+.btn {
+  cursor: pointer;
+  user-select: none;
+}
