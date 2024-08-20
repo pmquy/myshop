@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-env
+data:
+  CLIENT_URL: "http://localhost:3000"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-end-deployment
+  labels:
+    app: front-end
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: front-end
+  template:
+    metadata:
+      labels:
+        app: front-end
+    spec:
+      containers:
+        - name: front-end
+          imagePullPolicy: Never
+          image: front-end
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: common-env
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-end-service
+  labels:
+    app: front-end
+spec:
+  selector:
+    app: front-end
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-deployment
+  labels:
+    app: user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          imagePullPolicy: Never
+          image: user-service
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: MONGO_URI
+              value: "mongodb+srv://pmquy204:301204@cluster0.1delb0j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 "
+            - name: ENV
+              value: "DEV"
+            - name: TOKEN_SECRET
+              value: "oreiworiowiroeioer"
+          envFrom:
+            - configMapRef:
+                name: common-env
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service-service
+  labels:
+    app: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: LoadBalancer

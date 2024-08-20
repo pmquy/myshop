@@ -1,0 +1,42 @@
+services:
+  frontend:
+    image: front-end
+    build: ./front-end
+    ports:
+      - 80:3000
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+    develop:
+      watch:
+        - path: ./front-end
+          target: /usr/src/app
+          action: sync
+
+  nginx:
+    image: myshop-nginx
+    build: ./nginx
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-service
+
+  user-service:
+    image: user-service
+    build: ./user-service
+    restart: unless-stopped
+    develop:
+      watch:
+        - path: ./user-service
+          target: /usr/src/app
+          action: sync
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://mongo:27017/myshop
+      - TOKEN_SECRET=fkdsjfkjriewuorauiuries
+      - ENV=DEV
+    depends_on:
+      - mongo 
+
+  mongo:
+    image: "mongo"
