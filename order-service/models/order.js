@@ -2,7 +2,10 @@ const mongoose = require('mongoose')
 
 const Order = new mongoose.Schema({
   user: String,
-  status: String,
+  status: {
+    type: String,
+    enum: ['Created', 'Canceled', 'Paid', 'Shipping', 'Done']
+  },
   items: [new mongoose.Schema({
     product: String,
     quantity: Number,

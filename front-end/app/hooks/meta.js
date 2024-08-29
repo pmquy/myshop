@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { UserAPI } from '@/apis'
 
 const MetaDataContext = createContext()
@@ -15,9 +14,7 @@ function MetaDataProvider({ children }) {
     queryFn: () => UserAPI.getMe().then(setUser),
   })
 
-  if(query.isLoading) return <div></div>
-
-  return <MetaDataContext.Provider value={{ user, setUser }}>
+  return <MetaDataContext.Provider value={{ user, setUser, isLoading: query.isLoading, isError: query.isError }}>
     {children}
   </MetaDataContext.Provider>
 }

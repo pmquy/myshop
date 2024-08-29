@@ -1,10 +1,14 @@
 const mongoose = require('mongoose')
 
 const Designer = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    unique: true
+  },
   description: String,
   avatar: String,
   images: [String],
+  isDeleted: Boolean
 })
 
 module.exports = mongoose.model('Designers', Designer)

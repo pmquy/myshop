@@ -7,14 +7,14 @@ const VALIDATORS = {
     name: Joi.string().required(),
     description: Joi.string().required(),
     avatar: Joi.string().required(),
-    images: Joi.array().items(Joi.string()).required()
+    images: Joi.array().min(1).items(Joi.string()).required()
   }).unknown(false).required(),
 
   update: Joi.object({
     name: Joi.string(),
     description: Joi.string(),
     avatar: Joi.string(),
-    images: Joi.array().items(Joi.string())
+    images: Joi.array().min(1).items(Joi.string())
   }).unknown(false).required()
 }
 
@@ -22,8 +22,9 @@ class Controller {
 
   find = async (req, res, next) => {
     try {
-      const rooms = await Room.find(JSON.parse(req.query.q)).select(["_id", "name"])
-      res.status(200).json({ status: 200, data: rooms})
+      const query = JSON.parse(req.query.q)
+      const categories = await Room.find(query).select(["_id", "name"])
+      res.status(200).json({ status: 200, data: categories })
     } catch (error) {
       next(error)
     }
@@ -31,8 +32,8 @@ class Controller {
 
   findById = async (req, res, next) => {
     try {
-      const room = await Room.findById(req.params.id)
-      res.status(200).json({ status: 200, data: room })
+      const category = await Room.findById(req.params.id)
+      res.status(200).json({ status: 200, data: category })
     } catch (error) {
       next(error)
     }
@@ -41,7 +42,7 @@ class Controller {
   deleteById = async (req, res, next) => {
     try {
       if (req.user?.role != 'Admin') throw new E('Invalid account', 403)
-      await Room.findByIdAndDelete(req.params.id)
+      await Room.findByIdAndUpdate(req.params.id, { isDeleted: true })
       res.status(200).json({ status: 200, data: "Deleted" })
     } catch (error) {
       next(error)
@@ -62,7 +63,7 @@ class Controller {
   create = async (req, res, next) => {
     try {
       if (req.user?.role != 'Admin') throw new E('Invalid account', 403)
-      const payload = await VALIDATORS.create.validateAsync(req.body)
+      const payload = { ...await VALIDATORS.create.validateAsync(req.body), isDeleted: false }
       await Room.create(payload)
       res.status(200).json({ status: 200, data: "Created" })
     } catch (error) {

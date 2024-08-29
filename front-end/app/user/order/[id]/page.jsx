@@ -80,10 +80,11 @@ function Payment({ payment }) {
     <div><b>Status: </b>{payment.status}</div>
     <div><b>Created at: </b>{parseDate(payment.createdAt)}</div>
     {payment.status == 'Done' && <div><b>Paid at: </b>{parseDate(payment.updatedAt)}</div>}
-    {payment.status === 'Created' && <div className="flex gap-5">
-      <div onClick={handlePay} className="btn py-2 px-5 bg-black-1 hover:opacity-90 transition-opacity text-white-1 w-max">CLICK TO PAY</div>
-      <div onClick={handleCancel} className="btn py-2 px-5 bg-black-1 hover:opacity-90 transition-opacity text-white-1 w-max">CANCEL ORDER</div>
-    </div>}
+    {
+      payment.status === 'Created' && <div className="flex gap-5">
+        <div onClick={handleCancel} className="btn py-2 px-5 bg-black-1 hover:opacity-90 transition-opacity text-white-1 w-max">CANCEL ORDER</div>
+      </div>
+    }
   </div>
 }
 
@@ -95,7 +96,7 @@ export default function Page() {
     queries: [
       {
         queryKey: ['order', params.id],
-        queryFn: () => OrderAPI.findById(params.id)
+        queryFn: () => OrderAPI.findById(params.id),
       },
       {
         queryKey: ['payment', { order: params.id }],

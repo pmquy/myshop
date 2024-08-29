@@ -74,10 +74,9 @@ function Summary({ setIndex, orders = [] }) {
 }
 
 function Orders({ orders = [] }) {
-  return <div className="flex justify-between text-nowrap">
+  return <div className="flex justify-between text-nowrap overflow-x-auto gap-10">
     <div className="flex flex-col gap-5 grow">
-      <div className="text-xl font-semibold">Your orders</div>
-      <hr />
+      <div className="text-xl font-semibold py-2 border-b-2 border-white-3">Your orders</div>
       {orders.length == 0 && <div className="">No orders found.</div>}
       {
         orders.map(e => <div key={e._id}>
@@ -85,18 +84,16 @@ function Orders({ orders = [] }) {
         </div>)
       }
     </div>
-    <div className="flex flex-col gap-5 md:basis-1/6">
-      <div className="text-xl font-semibold">Status</div>
-      <hr />
+    <div className="flex flex-col gap-5">
+      <div className="text-xl font-semibold py-2 border-b-2 border-white-3">Status</div>
       {
         orders.map(e => <div key={e._id}>
           <div className="text-xss">{e.status}</div>
         </div>)
       }
     </div>
-    <div className="flex flex-col gap-5 basis-1/6 max-md:hidden">
-      <div className="text-xl font-semibold">Created at</div>
-      <hr />
+    <div className="flex flex-col gap-5">
+      <div className="text-xl font-semibold py-2 border-b-2 border-white-3">Created at</div>
       {
         orders.map(e => <div key={e._id}>
           <div className="text-xss">{parseDate(e.createdAt)}</div>
@@ -390,16 +387,23 @@ const nav = ['Summary', 'Orders', 'Personal data', 'Address', 'My registered pro
 export default function Page() {
   const [index, setIndex] = useState(0)
   const router = useRouter()
-  const { user } = useMetaData()
+  const { user, isLoading } = useMetaData()
 
   const query = useQueries({
     queries: [
       {
         queryKey: ['orders'],
-        queryFn: () => OrderAPI.find()
+        queryFn: () => OrderAPI.find(),
+        initialData: []
       }
     ]
   })
+
+  if (isLoading) {
+    return <div className="h-full">
+      <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" />
+    </div>
+  }
 
   if (!user) {
     router.push('/user/login')
@@ -411,7 +415,7 @@ export default function Page() {
     <div className="flex gap-10 font-semibold overflow-y-auto py-5 px-10">
       {nav.map((e, i) => <div key={i} onClick={() => setIndex(i)} className={` ${index == i ? 'text-red-1' : 'hover:text-red-1'} shrink-0 btn`}>{e}</div>)}
     </div>
-    <div className="p-10 bg-white">
+    <div className="p-10 bg-white-1">
       {index == 0 && <Summary setIndex={setIndex} orders={query[0].data} />}
       {index == 1 && <Orders orders={query[0].data} />}
       {index == 2 && <PersonalData />}

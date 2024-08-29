@@ -18,6 +18,52 @@ class Api {
         return res.data
       })
   }
+
+  create = async data => {
+    return fetch(`${url}/categories`, {
+      method: 'POST',
+      headers: {
+        'Authorization': localStorage.getItem('access_token'),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status != 200) throw new Error(res.data)
+        return res.data
+      })
+  }
+
+  updateById = async (id, data) => {
+    return fetch(`${url}/categories/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': localStorage.getItem('access_token'),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status != 200) throw new Error(res.data)
+        return res.data
+      })
+  }
+
+  deleteById = async id => {
+    return fetch(`${url}/categories/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': localStorage.getItem('access_token'),
+      },
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status != 200) throw new Error(res.data)
+        return res.data
+      })
+  }
 }
 
 export default new Api()

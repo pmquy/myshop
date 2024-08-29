@@ -8,7 +8,7 @@ redis.on('error', (err) => {
   console.log('Redis Client Error:', err);
 });
 
-const connect = async () => {
+const connect = () => {
   redis.connect()
     .then(() => console.log('Connected Redis: ' + process.env.REDIS_URI))
     .catch(err => console.error(err.message))

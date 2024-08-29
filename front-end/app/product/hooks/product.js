@@ -2,38 +2,33 @@
 
 import { useQueries } from "@tanstack/react-query"
 import { createContext, useContext } from 'react'
-import { RoomAPI, DesignerAPI, ProductAPI, CategoryAPI} from "@/apis"
+import { RoomAPI, DesignerAPI, CategoryAPI} from "@/apis"
 
 const ProductContext = createContext()
 
-function ProductProvider({ children }) {
+function ProductProvider({ children, value = {} }) {
   const query = useQueries({
     queries: [
       {
         queryKey: ['rooms'],
-        queryFn: () => RoomAPI.find({})
+        queryFn: () => RoomAPI.find()
       },
       {
         queryKey: ['designers'],
-        queryFn: () => DesignerAPI.find({})
+        queryFn: () => DesignerAPI.find()
       },
       {
         queryKey: ['categories'],
-        queryFn: () => CategoryAPI.find({})
+        queryFn: () => CategoryAPI.find()
       },
-      {
-        queryKey: ['products'],
-        queryFn: () => ProductAPI.find({})
-      }
     ],
   })
 
   const rooms = query[0].isSuccess ? query[0].data : []
   const designers = query[1].isSuccess ? query[1].data : []
   const categories = query[2].isSuccess ? query[2].data : []
-  const products = query[3].isSuccess ? query[3].data : []
 
-  return <ProductContext.Provider value={{ rooms, designers, categories, products }}>{children}</ProductContext.Provider>
+  return <ProductContext.Provider value={{...value, rooms, designers, categories }}>{children}</ProductContext.Provider>
 }
 
 const useProduct = () => {
