@@ -1,6 +1,7 @@
 require('dotenv').config()
 require('./configs/mongodb').connect()
 require('./configs/redis').connect()
+require('./configs/kafka').connect()
 
 const express = require('express')
 const app = express()
