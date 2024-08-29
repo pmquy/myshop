@@ -5,21 +5,6 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { IoIosArrowDown, IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 
-const FiltersMemo = memo(({ filters }) => {
-  const router = useRouter()
-  const pathname = usePathname()
-
-  return <div className=" flex gap-5 flex-wrap items-center">
-    {filters.map((e, i) => <div className=" py-2 px-5 border-2 border-white-3 rounded-3xl text-xs flex gap-2 items-center" key={i}>
-      {e[1]}
-      <MdOutlineClose onClick={() => handleFilter(e[0], e[1])} className="w-4 cursor-pointer h-4" />
-    </div>
-    )}
-    {!!filters.length && <div onClick={() => router.push(pathname, { scroll: false })} className="text-grey-1 hover:text-red-1 underline cursor-pointer select-none">Delete selection</div>}
-  </div>
-})
-
-FiltersMemo.displayName = 'FiltersMemo'
 
 export default function Filter({ filter }) {
   const [filterBy, setFilterBy] = useState()
@@ -71,6 +56,13 @@ export default function Filter({ filter }) {
       }
     </div>
 
-    <FiltersMemo filters={filters} />
+    <div className=" flex gap-5 flex-wrap items-center">
+      {filters.map((e, i) => <div className=" py-2 px-5 border-2 border-white-3 rounded-3xl text-xs flex gap-2 items-center" key={i}>
+        {e[1]}
+        <MdOutlineClose onClick={() => handleFilter(e[0], e[1])} className="w-4 cursor-pointer h-4" />
+      </div>
+      )}
+      {!!filters.length && <div onClick={() => router.push(pathname, { scroll: false })} className="text-grey-1 hover:text-red-1 underline cursor-pointer select-none">Delete selection</div>}
+    </div>
   </div>
 }

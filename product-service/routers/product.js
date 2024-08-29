@@ -10,5 +10,6 @@ router.put('/:id', auth, controller.updateById)
 router.delete('/:id', auth, controller.updateById)
 router.get('/', controller.find)
 router.post('/', auth, controller.create)
+router.post('/summary1', auth, controller.summary1)
 
 module.exports = router

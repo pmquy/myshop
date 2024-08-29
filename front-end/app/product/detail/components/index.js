@@ -1,2 +1,3 @@
 import Configure from "./configure"
-export {Configure}
+import ProductDetail from './productDetail'
+export {Configure, ProductDetail}

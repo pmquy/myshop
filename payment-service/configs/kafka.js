@@ -45,6 +45,7 @@ consumer.run({
         let discountPrice = (payload.code === 'HelloWorld') ? 20 : 0
         let finalPrice = basePrice + shippingPrice - discountPrice
         await Payment.create({ order: payload._id, status: 'Created', user: payload.user, basePrice, shippingPrice, discountPrice, finalPrice })
+      
       case 'cancel_order':
         const id = message.value.toString()
         await Payment.findOneAndDelete({ order: id })

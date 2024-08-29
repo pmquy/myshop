@@ -6,5 +6,6 @@ const router = Router()
 
 router.put('/:id', auth, controller.payById)
 router.get('/', auth, controller.find)
+router.post('/summary1', auth, controller.summary1)
 
 module.exports = router

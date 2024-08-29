@@ -1,15 +1,20 @@
 const mongoose = require('mongoose')
 
 const Payment = new mongoose.Schema({
-  order: String,
+  order: {
+    type: String,
+    unique: true,
+  },
   basePrice: Number,
   shippingPrice: Number,
   discountPrice: Number,
   finalPrice: Number,
-  status: String,
+  status: {
+    type: String,
+    enum: ['Created', 'Done']
+  },
   user: String,
 }, { timestamps: true })
 
-Payment.index({ order: 1 }, { unique: true })
 
 module.exports = mongoose.model('Payments', Payment)

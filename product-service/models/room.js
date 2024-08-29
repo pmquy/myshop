@@ -1,10 +1,14 @@
 const mongoose = require('mongoose')
 
 const Room = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    unique: true
+  },
   description: String,
   avatar: String,
   images: [String],
+  isDeleted: Boolean
 })
 
 

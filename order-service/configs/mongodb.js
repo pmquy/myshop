@@ -7,4 +7,4 @@ const connect = () => {
     .catch(err => console.error(err.message))
 }
 
-module.exports = connect
+module.exports = { connect }

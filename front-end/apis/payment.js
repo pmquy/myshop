@@ -30,6 +30,20 @@ class Api {
       })
   }
 
+  summary1 = async ({startAt, endAt}) => {
+    return fetch(`${url}/payments/summary1?startAt=${startAt}&endAt=${endAt}`, {
+      headers: {
+        'Authorization': localStorage.getItem('access_token'),
+      },
+      method: 'POST',
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status != 200) throw new Error(res.data)
+        return res.data
+      })
+  }
+
 }
 
 
