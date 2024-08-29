@@ -193,9 +193,9 @@ function Create() {
       <div className="p-10 flex flex-col gap-10">
         {
           options.map((e, i) =>
-            <div className="flex gap-5 items-center">
+            <div key={i} className="flex gap-5 items-center">
               <RiDeleteBack2Fill onClick={() => handleDeleteOption(i)} className="w-8 h-8 hover:text-red-1" />
-              <div key={i} className="flex flex-col gap-1 grow">
+              <div className="flex flex-col gap-1 grow">
                 <Input onChange={e => handleChangeOption(i, "key", e.target.value)} placeholder="Key" value={e.key} />
                 <Input onChange={e => handleChangeOption(i, "name", e.target.value)} placeholder="Name" value={e.name} />
                 <Input onChange={e => handleChangeOption(i, "avatar", e.target.value)} placeholder="Avatar" value={e.avatar} />
@@ -211,9 +211,9 @@ function Create() {
       <div className="p-10 flex flex-col gap-10">
         {
           recommendations.map((e, i) =>
-            <div className="flex gap-5 items-center">
+            <div key={i} className="flex gap-5 items-center">
               <RiDeleteBack2Fill onClick={() => handleDeleteRecommendation(i)} className="w-8 h-8 hover:text-red-1" />
-              <div key={i} className="flex flex-col gap-1 grow">
+              <div  className="flex flex-col gap-1 grow">
                 <Input onChange={e => handleChangeRecommendation(i, "name", e.target.value)} placeholder="Name" value={e.name} />
                 <Input onChange={e => handleChangeRecommendation(i, "avatar", e.target.value)} placeholder="Avatar" value={e.avatar} />
                 {

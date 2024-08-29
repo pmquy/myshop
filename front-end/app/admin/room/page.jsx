@@ -54,7 +54,7 @@ function Update({ room }) {
     <img src={room.avatar} className="h-36 w-max" />
     <Input placeholder="Image urls (Split by ',')" ref={imagesRef} defaultValue={room.images} />
     <div className="flex flex-wrap gap-2">
-      {room.images.split(',').map(e => <img className="h-36" src={e} />)}
+      {room.images.split(',').map(e => <img key={e} className="h-36" src={e} />)}
     </div>
     <div onClick={mutation.mutate} className={`bg-black-1 py-2 px-5 w-max m-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
       {mutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "UPDATE DESIGNER"}
