@@ -5,15 +5,16 @@ import { ProductDetail } from "@/app/product/detail/components"
 import { useProduct } from "@/app/product/hooks"
 import { Input, Select } from "@/ui"
 import { useMutation, useQuery } from "@tanstack/react-query"
+import Link from "next/link"
 import { useCallback, useRef, useState } from "react"
 import { Pie } from "react-chartjs-2"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { IoMdAddCircle } from "react-icons/io"
 import { RiDeleteBack2Fill } from "react-icons/ri"
 
-const nav = ['Create', 'Dashboard']
+const nav = ['Create', 'Charts', 'Products']
 
-function ProductSummary({ }) {
+function Charts({ }) {
 
   const [summary1, setSummary1] = useState([{ labels: [], datasets: [{ data: [] }] }, { labels: [], datasets: [{ data: [] }] }, { labels: [], datasets: [{ data: [] }] }])
 
@@ -213,7 +214,7 @@ function Create() {
           recommendations.map((e, i) =>
             <div key={i} className="flex gap-5 items-center">
               <RiDeleteBack2Fill onClick={() => handleDeleteRecommendation(i)} className="w-8 h-8 hover:text-red-1" />
-              <div  className="flex flex-col gap-1 grow">
+              <div className="flex flex-col gap-1 grow">
                 <Input onChange={e => handleChangeRecommendation(i, "name", e.target.value)} placeholder="Name" value={e.name} />
                 <Input onChange={e => handleChangeRecommendation(i, "avatar", e.target.value)} placeholder="Avatar" value={e.avatar} />
                 {
@@ -237,10 +238,27 @@ function Create() {
       <div onClick={() => mutation.mutate(setPreview)} className={`bg-red-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity`}>PREVIEW</div>
       {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
       {preview && <div className="max-h-[500px] overflow-y-auto"><ProductDetail product={preview} /></div>}
-      {preview && <div onClick={() => mutation.mutate(ProductAPI.create)} className={`bg-black-1 py-2 px-5 w-max m-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
+      {preview && <div onClick={() => mutation.mutate(ProductAPI.create)} className={`bg-black-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
         {mutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "CREATE PRODUCT"}
       </div>}
     </div>
+  </div>
+}
+
+function Products() {
+  const query = useQuery({
+    queryKey: ['products', { q: {} }],
+    queryFn: () => ProductAPI.find({ q: {} }),
+    initialData: { products: [] }
+  })
+  return <div className="flex flex-col gap-10">
+    {
+      query.data.products.map(e => <div key={e._id} className="flex gap-5 items-center">
+        <img src={e.avatar} className="w-20 h-20 overflow-hidden object-cover"/>
+        <Link href={'/admin/product/' + e._id} className="hover:text-red-1">{e._id}</Link>
+        <div>{e.name}</div>
+      </div>)
+    }
   </div>
 }
 
@@ -255,7 +273,8 @@ export default function Page() {
     </div>
     <div className="p-10 bg-white-1">
       {index === 0 && <Create />}
-      {index === 1 && <ProductSummary />}
+      {index === 1 && <Charts />}
+      {index === 2 && <Products />}
     </div>
   </div>
 }

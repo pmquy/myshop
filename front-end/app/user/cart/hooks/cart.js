@@ -24,23 +24,23 @@ function CartProvider({ children }) {
     CartAPI.find({}).then(setCarts)
   }, [])
 
-  const updateByIndex = useCallback((i, update) => {
+  const updateByIndex = (i, update) => {
     setCarts(carts => {
       updateById(carts[i]._id, update)
       Object.assign(carts[i], update)
       return [...carts]
     })
-  }, [])
-  
-  const deleteByIndex = useCallback(i => {
+  }
+
+  const deleteByIndex = i => {
     setCarts(carts => {
       CartAPI.deleteById(carts[i]._id)
       carts.splice(i, 1)
       return [...carts]
     })
-  }, [])
+  }
 
-  return <CartContext.Provider value={{ carts, setCarts, updateByIndex, deleteByIndex}}>
+  return <CartContext.Provider value={{ carts, setCarts, updateByIndex, deleteByIndex }}>
     {children}
   </CartContext.Provider>
 }

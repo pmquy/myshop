@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { Input, Select, Radio } from "@/ui"
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query"
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { OrderAPI, PageAPI, UserAPI } from "@/apis"
+import { OrderAPI, PageAPI, UserAPI, VoucherAPI } from "@/apis"
 import { parseDate } from "@/utils"
 import Link from "next/link"
 
@@ -74,9 +74,10 @@ function Summary({ setIndex, orders = [] }) {
 }
 
 function Orders({ orders = [] }) {
-  return <div className="flex justify-between text-nowrap overflow-x-auto gap-10">
+  return <div className="flex justify-between text-nowrap">
     <div className="flex flex-col gap-5 grow">
-      <div className="text-xl font-semibold py-2 border-b-2 border-white-3">Your orders</div>
+      <div className="text-xl font-semibold">Your recent orders</div>
+      <hr />
       {orders.length == 0 && <div className="">No orders found.</div>}
       {
         orders.map(e => <div key={e._id}>
@@ -84,16 +85,18 @@ function Orders({ orders = [] }) {
         </div>)
       }
     </div>
-    <div className="flex flex-col gap-5">
-      <div className="text-xl font-semibold py-2 border-b-2 border-white-3">Status</div>
+    <div className="flex flex-col gap-5 md:basis-1/6">
+      <div className="text-xl font-semibold">Status</div>
+      <hr />
       {
         orders.map(e => <div key={e._id}>
           <div className="text-xss">{e.status}</div>
         </div>)
       }
     </div>
-    <div className="flex flex-col gap-5">
-      <div className="text-xl font-semibold py-2 border-b-2 border-white-3">Created at</div>
+    <div className="flex flex-col gap-5 basis-1/6 max-md:hidden">
+      <div className="text-xl font-semibold">Created at</div>
+      <hr />
       {
         orders.map(e => <div key={e._id}>
           <div className="text-xss">{parseDate(e.createdAt)}</div>
@@ -382,7 +385,23 @@ function Address() {
   </div>
 }
 
-const nav = ['Summary', 'Orders', 'Personal data', 'Address', 'My registered products']
+function Vouchers() {
+  const query = useQuery({
+    queryKey: ['vouchers', { q: {} }],
+    queryFn: () => VoucherAPI.find({ q: {} }),
+    initialData: []
+  })
+  return <div className="flex flex-col gap-5">
+    {query.data.map(e => <div key={e._id} className="flex gap-5">
+      <div><b>Code: </b>{e.code}</div>
+      <div><b>Quantity: </b>{e.quantity}</div>
+      <div className="text-xss text-green-600">{e.description}</div>
+      {!e.user && <div className="text">(For anyone)</div>}
+    </div>)}
+  </div>
+}
+
+const nav = ['Summary', 'Orders', 'Personal data', 'Address', 'My registered products', 'Vouchers']
 
 export default function Page() {
   const [index, setIndex] = useState(0)
@@ -420,6 +439,7 @@ export default function Page() {
       {index == 1 && <Orders orders={query[0].data} />}
       {index == 2 && <PersonalData />}
       {index == 3 && <Address />}
+      {index == 5 && <Vouchers/>}
     </div>
   </div >
 }

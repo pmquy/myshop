@@ -1,14 +1,13 @@
-import ProductAPI from "./product"
-const url = process.env.NEXT_PUBLIC_CART_SERVICE ? process.env.NEXT_PUBLIC_CART_SERVICE : process.env.NEXT_PUBLIC_SERVER_URL
+import { parseQuery } from "@/utils"
 
+const url = process.env.NEXT_PUBLIC_PAYMENT_SERVICE ? process.env.NEXT_PUBLIC_PAYMENT_SERVICE : process.env.NEXT_PUBLIC_SERVER_URL
 
 class Api {
-
-  find = async (query = {}) => {
-    return fetch(`${url}/carts?q=${JSON.stringify(query)}`, {
+  find = async (query) => {
+    return fetch(`${url}/vouchers${parseQuery(query)}`, {
       headers: {
-        'Authorization': localStorage.getItem('access_token')
-      }
+        'Authorization': localStorage.getItem('access_token'),
+      },
     })
       .then(res => res.json())
       .then(res => {
@@ -17,11 +16,11 @@ class Api {
       })
   }
 
-  findById = async id => {
-    return fetch(`${url}/carts/${id}`, {
+  findByCode = async code => {
+    return fetch(`${url}/vouchers/${code}`, {
       headers: {
-        'Authorization': localStorage.getItem('access_token')
-      }
+        'Authorization': localStorage.getItem('access_token'),
+      },
     })
       .then(res => res.json())
       .then(res => {
@@ -31,12 +30,12 @@ class Api {
   }
 
   create = async data => {
-    return fetch(`${url}/carts/`, {
-      headers: {
-        'Authorization': localStorage.getItem('access_token'),
-        'Content-Type': 'application/json'
-      },
+    return fetch(`${url}/vouchers`, {
       method: 'POST',
+      headers: {
+        'Authorization': localStorage.getItem('access_token'),
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data)
     })
       .then(res => res.json())
@@ -45,14 +44,14 @@ class Api {
         return res.data
       })
   }
-  
-  updateById = async (id, data) => {
-    return fetch(`${url}/carts/${id}`, {
-      headers: {
-        'Authorization': localStorage.getItem('access_token'),
-        'Content-Type': 'application/json'
-      },
+
+  updateByCode = async (code, data) => {
+    return fetch(`${url}/vouchers/${code}`, {
       method: 'PUT',
+      headers: {
+        'Authorization': localStorage.getItem('access_token'),
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data)
     })
       .then(res => res.json())
@@ -61,13 +60,13 @@ class Api {
         return res.data
       })
   }
-  
-  deleteById = async id => {
-    return fetch(`${url}/carts/${id}`, {
+
+  deleteByCode = async code => {
+    return fetch(`${url}/vouchers/${code}`, {
+      method: 'DELETE',
       headers: {
         'Authorization': localStorage.getItem('access_token'),
       },
-      method: 'DELETE',
     })
       .then(res => res.json())
       .then(res => {
@@ -76,6 +75,5 @@ class Api {
       })
   }
 }
-
 
 export default new Api()

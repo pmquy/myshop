@@ -122,9 +122,8 @@ class Controller {
 
   create = async (req, res, next) => {
     try {
-      const payload = await VALIDATORS.create.validateAsync(req.body)
-      payload.role = 'Customer'
-      const user = await User.create(payload)
+      const payload = { ...await VALIDATORS.create.validateAsync(req.body), role: 'Customer' }
+      await User.create(payload)
       return res.status(200).send({ status: 200, data: 'Created' })
     } catch (err) {
       next(new E(err.message))
@@ -133,7 +132,7 @@ class Controller {
 
   find = async (req, res, next) => {
     try {
-      if(req.user?.role != 'Admin') throw new E('Invalid account', 403)
+      if (req.user?.role != 'Admin') throw new E('Invalid account', 403)
       const users = await User.find(req.query)
       res.status(200).json({ status: 200, data: users })
     } catch (err) {
