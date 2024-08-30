@@ -1,5 +1,6 @@
-const {Router} = require('express')
-const router = Router()
+const { auth } = require('../middlewares')
+const router = require("express").Router()
 
-router.use('/payments', require('./payment'))
+router.use('/vouchers', auth, require('./voucher'))
+router.use('/payments', auth, require('./payment'))
 module.exports = router

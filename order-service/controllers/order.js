@@ -6,7 +6,6 @@ const { redis } = require('../configs/redis')
 
 const url = process.env.PRODUCT_SERVICE ? process.env.PRODUCT_SERVICE : process.env.SERVER_URL
 
-
 const VALIDATORS = {
   create: Joi.object({
     items: Joi.array().min(1).items(Joi.object({
@@ -25,7 +24,7 @@ const VALIDATORS = {
       detail: Joi.string().required()
     }).unknown(false).required(),
     note: Joi.string().required(),
-    code: Joi.string()
+    code: Joi.string().default("")
   }).required().unknown(false),
 }
 

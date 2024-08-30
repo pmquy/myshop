@@ -4,7 +4,10 @@ const User = new mongoose.Schema({
   firstName: String,
   lastName: String,
   password: String,
-  role: String,
+  role: {
+    type: String,
+    enum: ['Admin', "Customer"]
+  },
   salutation: String,
   addresses: [new mongoose.Schema({
     firstName: String,

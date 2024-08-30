@@ -18,9 +18,8 @@ class Controller {
 
   payById = async (req, res, next) => {
     try {
-      if (!req.user) throw new E('You must login', 401)
+      if (req.user?.role != 'Admin') throw new E('Invalid account', 403)
       const payment = await Payment.findById(req.params.id)
-      if (req.user.role != 'Admin') throw new E('Unauthorized', 403)
       if (payment.status != 'Created') throw new E('The payment was done', 400)
       await payment.updateOne({ status: 'Done' })
       res.status(200).json({ status: 200, data: 'paid' })

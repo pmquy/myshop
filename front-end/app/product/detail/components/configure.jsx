@@ -8,7 +8,7 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
   const [option, setOption] = useState(initialOption)
   const [edit, setEdit] = useState()
 
-  const estimatedPrice = useMemo(() => {
+  const price = useMemo(() => {
     return Object.keys(option).reduce((prev, cur) => prev + product.options[cur][option[cur]].price, product.price)
   }, [option, product])
 
@@ -46,15 +46,15 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
       }
       {
         index == 1 && <div className="flex max-lg:flex-col">
-          <img src={product.avatar} className="object-cover overflow-hidden grow" />
+          <img src={product.avatar} className="object-cover object-center overflow-hidden grow" />
           <div className=" lg:w-[500px] text-xss flex flex-col gap-5 p-5 shrink-0">
             <div className="max-h-[400px] overflow-y-auto grow overscroll-contain">
               {
                 !edit ?
                   <div className="flex flex-col gap-2">
                     {
-                      Object.keys(product.options).map((e, i) => <div key={i} className="flex overflow-x-hidden overflow-ellipsis hover:text-red-1 btn justify-between items-center" onClick={() => setEdit(e)}>
-                        <div className=""><b className=" capitalize">{e}: </b> {product.options[e][option[e]]?.name}</div>
+                      Object.keys(product.options).map((e, i) => <div key={i} className="flex hover:text-red-1 btn justify-between items-center gap-5" onClick={() => setEdit(e)}>
+                        <div className="text-nowrap overflow-x-hidden overflow-ellipsis"><b className=" capitalize">{e}: </b> {product.options[e][option[e]]?.name}</div>
                         {product.options[e][option[e]] && <img src={product.options[e][option[e]].avatar} className="w-12 h-12 object-cover object-center" />}
                       </div>)
                     }
@@ -68,9 +68,10 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
                     <div className="grid gap-5 p-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(100px,1fr))' }}>
                       {
                         product.options[edit].map((e, i) => {
-                          return <div title={e.name} key={i} onClick={() => setOption({ ...option, [edit]: i })} className={`flex flex-col p-2 border-2 rounded-lg ${option[edit] == i ? ' border-red-1' : 'border-transparent normal-card '}`}>
+                          return <div title={e.name} key={i} onClick={() => {setOption({ ...option, [edit]: i }); setEdit(null)}} className={`flex flex-col p-2 border-2 rounded-lg ${option[edit] == i ? ' border-red-1' : 'border-transparent normal-card '}`}>
                             <img className=" grow object-center object-cover" src={e.avatar}></img>
                             <div className=" text-center overflow-hidden text-nowrap text-ellipsis">{e.name}</div>
+                            <div className=" text-center text-xss font-semibold">${e.price}</div>
                           </div>
                         })
                       }
@@ -82,7 +83,7 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
               <div className="bg-white-3 text-center py-5">Estimated delivery:<br />Friday, 26 July - Thursday, 01 August</div>
               <div className="flex gap-5 justify-between items-center">
                 <div className="">include sales tax, plus costs of shipping</div>
-                <div className="text-xl font-semibold text-nowrap">USD {estimatedPrice}</div>
+                <div className="text-xl font-semibold text-nowrap">USD {price}</div>
               </div>
               <div className="flex gap-5 justify-between items-center">
                 <div className="">Inventory amount</div>

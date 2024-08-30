@@ -98,11 +98,9 @@ function Designer({ product }) {
 
 function Introduction({ product }) {
   const { designers } = useProduct()
-  return <div className=" p-10 flex items-center max-lg:flex-col gap-10">
-    <div className="basis-1/2 overflow-hidden">
-      <img src={product.avatar} className="object-cover object-center"></img>
-    </div>
-    <div className=" basis-1/2 flex flex-col gap-5 max-lg:items-center">
+  return <div className="flex max-lg:flex-col gap-10">
+    <img src={product.avatar} className="object-cover overflow-hidden basis-1/2 object-center"></img>
+    <div className=" p-10 basis-1/2 flex flex-col gap-5 max-lg:items-center">
       <div className=" text-5xl font-semibold">{product.name}</div>
       <div className=" text-2xl text-grey-1">{designers.find(e => e._id === product.designer)?.name}</div>
       <div className="">{product.description}</div>
@@ -112,7 +110,7 @@ function Introduction({ product }) {
   </div>
 }
 
-export default function ProductDetail({ product, handleSubmit}) {
+export default function ProductDetail({ product, handleSubmit }) {
   return <div className=" flex flex-col gap-10">
     <div id="inspirations" ><Introduction product={product} /></div>
     <Slider images={product.images} />

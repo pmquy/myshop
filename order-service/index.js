@@ -10,6 +10,7 @@ app.use(express.json())
 app.use(require('cors')())
 app.use(require('morgan')('tiny'))
 
+app.get("/", (req, res) => res.send("Ping"))
 app.use(require('./routers'))
 
 const { handle404, handleError } = require('./middlewares')
