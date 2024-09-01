@@ -9,15 +9,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Line } from "react-chartjs-2"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { IoMdAddCircle } from "react-icons/io"
+import { IoCloseCircle } from "react-icons/io5"
 import { RiDeleteBack2Fill } from "react-icons/ri"
 
-const nav = ['Preview', 'Update', 'Dashboard']
+const nav = ['Product', 'Update', 'Dashboard']
 
-function Preview({ product }) {
+function Product({ product }) {
 
   const mutation = useMutation({
     mutationFn: () => {
-      if (confirm("Delete this product?")) return ProductAPI.deleteById
+      if (confirm("Delete this product?")) return ProductAPI.deleteById(product._id)
     }
   })
 
@@ -25,7 +26,7 @@ function Preview({ product }) {
     <div className="max-h-[500px] overflow-y-auto border-2 border-white-3">
       <ProductDetail product={product} />
     </div>
-    <div onClick={mutation.mutate} className={`bg-black-1 py-2 px-5 w-max m-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
+    <div onClick={mutation.mutate} className={`bg-red-1 py-2 px-5 w-max m-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
       {mutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "DELETE PRODUCT"}
     </div>
     {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
@@ -41,7 +42,7 @@ function Update({ originalProduct }) {
     product.recommendations.forEach(({ option, ...rest }) => a.push({ ...rest, option: Object.entries(option).map(e => e[0] + ',' + e[1]) }))
     product.recommendations = a
     const arr = []
-    Object.keys(product.options).forEach(e =>
+    Object.keys(product.options ? product.options : {}).forEach(e =>
       product.options[e].forEach(t => arr.push({ key: e, ...t }))
     )
     product.options = arr
@@ -53,6 +54,14 @@ function Update({ originalProduct }) {
   const [options, setOptions] = useState(product.options)
   const [recommendations, setRecommendations] = useState(product.recommendations)
   const [preview, setPreview] = useState()
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    }
+    return () => document.body.style.overflow = 'auto'
+  }, [open])
 
   const handleAddOption = useCallback(() => {
     setOptions([...options, { key: "Type", name: 'Name', price: 0, avatar: 'https://image_url_here' }])
@@ -128,19 +137,22 @@ function Update({ originalProduct }) {
         if (designerRef.current.value != product.designer) update.designer = designerRef.current.value
         if (categoryRef.current.value != product.category) update.category = categoryRef.current.value
         if (roomRef.current.value != product.room) update.room = roomRef.current.value
-        if (priceRef.current.value != product.price) update.price = priceRef.current.value
-        if (inventoryAmountRef.current.value != product.inventoryAmount) update.inventoryAmount = inventoryAmountRef.current.value
+        if (priceRef.current.value != product.price) update.price = Number.parseInt(priceRef.current.value)
+        if (inventoryAmountRef.current.value != product.inventoryAmount) update.inventoryAmount = Number.parseInt(inventoryAmountRef.current.value)
         if (JSON.stringify(product.recommendations) != JSON.stringify(recommendations)) update.recommendations = B
         if (JSON.stringify(product.options) != JSON.stringify(options)) update.options = A
-        if (!Object.keys(update).length) throw new Error("The product hasn't changed")
-        console.log(update)
         return callback.call(null, update)
       }
-    }
+    },
+    onSuccess: () => setOpen(prev => !prev)
   })
 
-  return <div className="flex gap-10 max-lg:flex-col">
-    <div className="flex flex-col gap-5 basis-1/2">
+  return <div>
+    <div className="flex flex-col gap-5 relative">
+      <div className="flex flex-col gap-5 sticky top-28 z-[1] w-max m-auto">
+        <button onClick={() => mutation.mutate(update => setPreview({ ...originalProduct, ...update }))} className={`bg-green-600 py-2 px-5 text-white text-center hover:opacity-90 transition-opacity`}>PREVIEW</button>
+        {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
+      </div>
       <Input placeholder="Name" ref={nameRef} defaultValue={product.name} />
       <Input placeholder="Description" ref={descriptionRef} defaultValue={product.description} />
       <Input placeholder="Avatar url" ref={avatarRef} defaultValue={product.avatar} />
@@ -160,7 +172,7 @@ function Update({ originalProduct }) {
                 <Input onChange={e => handleChangeOption(i, "key", e.target.value)} placeholder="Key" value={e.key} />
                 <Input onChange={e => handleChangeOption(i, "name", e.target.value)} placeholder="Name" value={e.name} />
                 <Input onChange={e => handleChangeOption(i, "avatar", e.target.value)} placeholder="Avatar" value={e.avatar} />
-                <Input onChange={e => handleChangeOption(i, "price", e.target.value)} placeholder="Price" type="number" value={e.price} />
+                <Input onChange={e => handleChangeOption(i, "price", Number.parseInt(e.target.value))} placeholder="Price" type="number" value={e.price} />
               </div>
             </div>
           )
@@ -193,17 +205,20 @@ function Update({ originalProduct }) {
         <div onClick={handleAddRecommendation} className="bg-black-1 hover:opacity-90 transition-opacity py-2 px-5 w-max text-white-1 btn">CREATE RECOMMENDATION</div>
       </div>
     </div>
-
-    <div className=" basis-1/2 relative">
-      <div className="sticky top-[85px] flex flex-col gap-10">
-        <div onClick={() => mutation.mutate(update => setPreview({ ...originalProduct, ...update }))} className={`bg-red-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity`}>PREVIEW</div>
-        {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
-        {preview && <div className="max-h-[400px] overflow-y-auto"><ProductDetail product={preview} /></div>}
-        {preview && <div onClick={() => mutation.mutate(update => ProductAPI.updateById(product._id, update))} className={`bg-black-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
-          {mutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "UPDATE PRODUCT"}
-        </div>}
+    {
+      open && <div className="fixed top-0 left-0 w-screen h-screen bg-black-1 bg-opacity-60 z-10">
+        <div className="p-10 bg-white-1 w-[90%] max-md:w-screen m-auto absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2  flex flex-col gap-5 ">
+          <IoCloseCircle onClick={() => setOpen(false)} className="w-8 h-8 absolute right-2 top-2" />
+          <div className="max-h-[70vh] overflow-y-auto">
+            <ProductDetail product={preview} />
+          </div>
+          <div onClick={() => mutation.mutate(update => ProductAPI.updateById(product._id, update))} className={`bg-black-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
+            {mutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "UPDATE PRODUCT"}
+          </div>
+          {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
+        </div>
       </div>
-    </div>
+    }
   </div>
 }
 
@@ -278,7 +293,8 @@ export default function Page() {
     queryFn: () => ProductAPI.findById(id)
   })
 
-  if (query.isError || query.isLoading) return <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading" />
+  if (query.isLoading) return <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading" />
+  if(query.isError) return <div className="p-10 text-center">Product not found</div>
 
   return <div className="bg-white-4 py-10 lg:px-10">
     <div className="text-4xl max-lg:text-xl font-semibold text-center py-10">Product {id}</div>
@@ -286,7 +302,7 @@ export default function Page() {
       {nav.map((e, i) => <div key={i} onClick={() => setIndex(i)} className={` ${index == i ? 'text-red-1' : 'hover:text-red-1'} shrink-0 btn`}>{e}</div>)}
     </div>
     <div className="p-10 bg-white-1">
-      {index == 0 && <Preview product={query.data} />}
+      {index == 0 && <Product product={query.data} />}
       {index == 1 && <Update originalProduct={query.data} />}
       {index == 2 && <Dashboard product={query.data} />}
     </div>

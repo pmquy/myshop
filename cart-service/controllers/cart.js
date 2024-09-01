@@ -2,7 +2,6 @@ const { Cart } = require('../models')
 const { E } = require('../utils')
 const Joi = require('joi')
 
-
 const VALIDATORS = {
   create: Joi.object({
     product: Joi.string().required(),

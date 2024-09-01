@@ -1,77 +1,53 @@
 'use client'
 import { OrderAPI, PaymentAPI } from "@/apis"
-import { useMutation } from "@tanstack/react-query"
-import { useMemo, useRef, useState } from "react"
+import { parseDate } from "@/utils"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import Link from "next/link"
+import { useRef, useState } from "react"
 import { Line } from "react-chartjs-2"
-import * as DateUtils from "@/utils/date"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
-import { Input } from "@/ui"
 
-const nav = ['Order Summary', 'Payment Summary', 'Order detail']
+const nav = ['Order charts', 'Payment charts', "Orders"]
 
-function OrderDetail() {
-  const idRef = useRef()
-  const [order, setOrder] = useState()
-  const [payment, setPayment] = useState()
-
-  const searchMutation = useMutation({
-    mutationFn: async e => {
-      e.preventDefault()
-      setOrder(await OrderAPI.findById(idRef.current.value))
-      setPayment((await PaymentAPI.find({ order: idRef.current.value }))[0])
-    }
+function Orders() {
+  const query = useQuery({
+    queryKey: ['orders', { q: {} }],
+    queryFn: () => OrderAPI.find({ q: {} }),
+    initialData: []
   })
-
-  const cancelMutation = useMutation({
-    mutationFn: () => {
-      if (confirm("Cancel this order"))
-        return OrderAPI.cancelById(order._id)
-    }
-  })
-
-  const payMutation = useMutation({
-    mutationFn: () => {
-      if (confirm("Confirm this order payment"))
-        return PaymentAPI.payById(payment._id)
-    }
-  })
-
-  return <div className="flex flex-col gap-5">
-    <form onSubmit={searchMutation.mutate} className="flex gap-5 items-center">
-      <Input className="grow" placeholder="Order id" ref={idRef} />
-      <button onClick={searchMutation.mutate} className={`bg-black-1 py-2 px-5 w-max m-auto text-white text-center hover:opacity-90 transition-opacity ${searchMutation.isPending ? ' pointer-events-none' : ''}`}>
-        {searchMutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "SEARCH"}
-      </button>
-    </form>
-    {searchMutation.isError && <div className="text-xss text-center text-red-1">{searchMutation.error.message}</div>}
-    {
-      searchMutation.isSuccess && <div className="flex flex-col gap-5">
-        <div><b>Order: </b>{order._id}</div>
-        <div><b>User: </b>{order.user}</div>
-        <div><b>Status: </b>{order.status}</div>
-        <div><b>Created at: </b>{DateUtils.parseDate(order.createdAt)}</div>
-        <div><b>Last change: </b>{DateUtils.parseDate(order.updatedAt)}</div>
-        <div><b>Base price: </b>${payment.basePrice}</div>
-        <div><b>Shipping price: </b>${payment.shippingPrice}</div>
-        <div><b>Discount price: </b>${payment.discountPrice}</div>
-        <div><b>Final price: </b>${payment.finalPrice}</div>
-      </div>
-    }
-    {
-      order?.status === 'Created' && <div className="flex justify-start gap-5">
-        <button onClick={cancelMutation.mutate} className={`bg-red-1 py-2 px-5 w-max m-auto text-white text-center hover:opacity-90 transition-opacity ${cancelMutation.isPending ? ' pointer-events-none' : ''}`}>
-          {cancelMutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "Cancel"}
-        </button>
-        <button onClick={payMutation.mutate} className={`bg-black-1 py-2 px-5 w-max m-auto text-white text-center hover:opacity-90 transition-opacity ${payMutation.isPending ? ' pointer-events-none' : ''}`}>
-          {payMutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "Pay"}
-        </button>
-      </div>
-    }
+  
+  const orders = query.data
+  
+  return <div className="flex gap-10">
+    <div className="flex flex-col gap-5 grow">
+      <div className="text-xl font-semibold text-red-1">All orders</div>
+      {orders.length == 0 && <div className="">No orders found.</div>}
+      {
+        orders.map(e => <div key={e._id}>
+          <div className="text-xss">Order <Link className="underline text-grey-1 hover:text-red-1" href={`/admin/order/${e._id}`}>{e._id}</Link></div>
+        </div>)
+      }
+    </div>
+    <div className="flex flex-col gap-5">
+      <div className="text-xl font-semibold text-red-1">Status</div>
+      {
+        orders.map(e => <div key={e._id}>
+          <div className="text-xss">{e.status}</div>
+        </div>)
+      }
+    </div>
+    <div className="flex flex-col gap-5">
+      <div className="text-xl font-semibold text-red-1">Created at</div>
+      {
+        orders.map(e => <div key={e._id}>
+          <div className="text-xss">{parseDate(e.createdAt)}</div>
+        </div>)
+      }
+    </div>
   </div>
-
 }
 
-function PaymentSummary() {
+function PaymentCharts() {
 
   const startAtRef = useRef(), endAtRef = useRef()
   const [summary1, setSummary1] = useState({ labels: [], datasets: [] })
@@ -135,7 +111,7 @@ function PaymentSummary() {
   </div>
 }
 
-function OrderSummary() {
+function OrderCharts() {
 
   const startAtRef = useRef(), endAtRef = useRef()
   const [summary1, setSummary1] = useState({ labels: [], datasets: [] })
@@ -210,9 +186,9 @@ export default function Page() {
       {nav.map((e, i) => <div key={i} onClick={() => setIndex(i)} className={` ${index == i ? 'text-red-1' : 'hover:text-red-1'} shrink-0 btn`}>{e}</div>)}
     </div>
     <div className="p-10 bg-white-1">
-      {index === 0 && <OrderSummary />}
-      {index === 1 && <PaymentSummary />}
-      {index === 2 && <OrderDetail />}
+      {index === 0 && <OrderCharts />}
+      {index === 1 && <PaymentCharts />}
+      {index === 2 && <Orders />}
     </div>
   </div>
 }

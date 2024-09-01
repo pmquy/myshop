@@ -16,12 +16,39 @@ class Api {
       })
   }
   
-  payById = async (id) => {
-    return fetch(`${url}/payments/${id}`, {
+  confirmPayByOrder = async (order) => {
+    return fetch(`${url}/payments/${order}/confirmPay`, {
       headers: {
         'Authorization': localStorage.getItem('access_token')
       },
-      method: 'PUT'
+      method: 'POST'
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status != 200) throw new Error(res.data)
+        return res.data
+      })
+  }
+  
+  revokePayByOrder = async (order) => {
+    return fetch(`${url}/payments/${order}/revokePay`, {
+      headers: {
+        'Authorization': localStorage.getItem('access_token')
+      },
+      method: 'POST'
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status != 200) throw new Error(res.data)
+        return res.data
+      })
+  }
+  
+  findByOrder = async (order) => {
+    return fetch(`${url}/payments/${order}`, {
+      headers: {
+        'Authorization': localStorage.getItem('access_token')
+      },
     })
       .then(res => res.json())
       .then(res => {

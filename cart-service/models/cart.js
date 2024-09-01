@@ -5,6 +5,6 @@ const Cart = new mongoose.Schema({
   product: String,
   quantity: Number,
   option: Object,
-})
+}, {minimize: false})
 
 module.exports = mongoose.model("Carts", Cart)

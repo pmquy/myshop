@@ -9,7 +9,7 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
   const [edit, setEdit] = useState()
 
   const price = useMemo(() => {
-    return Object.keys(option).reduce((prev, cur) => prev + product.options[cur][option[cur]].price, product.price)
+    return Object.keys(product.options).reduce((prev, cur) => prev + option[cur] ? product.options[cur][option[cur]].price : 0, product.price)
   }, [option, product])
 
   const submitMutation = useMutation({
@@ -68,7 +68,7 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
                     <div className="grid gap-5 p-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(100px,1fr))' }}>
                       {
                         product.options[edit].map((e, i) => {
-                          return <div title={e.name} key={i} onClick={() => {setOption({ ...option, [edit]: i }); setEdit(null)}} className={`flex flex-col p-2 border-2 rounded-lg ${option[edit] == i ? ' border-red-1' : 'border-transparent normal-card '}`}>
+                          return <div title={e.name} key={i} onClick={() => { setOption({ ...option, [edit]: i }); setEdit(null) }} className={`flex flex-col p-2 border-2 rounded-lg ${option[edit] == i ? ' border-red-1' : 'border-transparent normal-card '}`}>
                             <img className=" grow object-center object-cover" src={e.avatar}></img>
                             <div className=" text-center overflow-hidden text-nowrap text-ellipsis">{e.name}</div>
                             <div className=" text-center text-xss font-semibold">${e.price}</div>

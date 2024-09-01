@@ -4,13 +4,13 @@ const Order = new mongoose.Schema({
   user: String,
   status: {
     type: String,
-    enum: ['Created', 'Canceled', 'Paid', 'Shipping', 'Done']
+    enum: ['Created', 'Canceled', 'Paid', 'Shipping', 'Done'],
   },
   items: [new mongoose.Schema({
     product: String,
     quantity: Number,
     option: Object,
-  }, { _id: false })],
+  }, { _id: false, minimize: false })],
   address: new mongoose.Schema({
     firstName: String,
     lastName: String,

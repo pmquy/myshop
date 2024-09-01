@@ -10,7 +10,7 @@ const kafka = new Kafka({
     username: process.env.KAFKA_USERNAME,
     password: process.env.KAFKA_PASSWORD
   },
-  ssl: process.env.ENV === "PRODUCT",
+  ssl: true,
 })
 
 const producer = kafka.producer()
@@ -19,7 +19,7 @@ const consumer = kafka.consumer({ groupId: 'product-group' })
 const connect = async () => {
   await producer.connect().catch(err => console.log(err.message))
   await consumer.connect().catch(err => console.log(err.message))
-  await consumer.subscribe({ topic: 'create_order' })
+  await consumer.subscribe({ topic: 'create_order', fromBeginning: true})
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       const payload = JSON.parse(message.value.toString())
