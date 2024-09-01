@@ -78,6 +78,7 @@ class Controller {
     try {
       if (!req.user) throw new E('You must login', 401)
       const order = await Order.findById(req.params.id)
+      if(!order) throw new E("Order not found", 400)
       if (req.user.role != 'Admin' && order.user != req.user._id) throw new E('Unauthorized', 403)
       res.status(200).json({ status: 200, data: order })
     } catch (error) {

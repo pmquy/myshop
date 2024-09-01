@@ -1,9 +1,11 @@
+import { parseQuery } from "@/utils"
+
 const url = process.env.NEXT_PUBLIC_ORDER_SERVICE ? process.env.NEXT_PUBLIC_ORDER_SERVICE : process.env.NEXT_PUBLIC_SERVER_URL
 
 class Api {
 
-  find = async (query = {}) => {
-    return fetch(`${url}/orders?q=${JSON.stringify(query)}`, {
+  find = async (query) => {
+    return fetch(`${url}/orders${parseQuery(query)}`, {
       headers: {
         'Authorization': localStorage.getItem('access_token')
       }

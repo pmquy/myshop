@@ -11,7 +11,7 @@ const Payment = new mongoose.Schema({
   finalPrice: Number,
   status: {
     type: String,
-    enum: ['Created', 'Done']
+    enum: ['Pending', 'Done']
   },
   user: String,
 }, { timestamps: true })

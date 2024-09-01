@@ -8,5 +8,6 @@ import PageAPI from "./page";
 import OrderAPI from "./order";
 import PaymentAPI from "./payment";
 import VoucherAPI from "./voucher"
+import ShippingAPI from "./shipping";
 
-export { ProductAPI, CartAPI, UserAPI, DesignerAPI, RoomAPI, CategoryAPI, PageAPI, OrderAPI, PaymentAPI, VoucherAPI}
+export { ProductAPI, CartAPI, UserAPI, DesignerAPI, RoomAPI, CategoryAPI, PageAPI, OrderAPI, PaymentAPI, VoucherAPI, ShippingAPI}

@@ -12,7 +12,7 @@ const Select = forwardRef(function ({ choices, placeholder, onChange, ...props},
     if(onChange) onChange({e, i})
   }
 
-  return <div className="relative">
+  return <div onClick={() => ref.current.focus()} className="relative">
     <input {...props} onBlur={() => setTimeout(() => setOpen(false), 200)} onFocus={() => setOpen(true)} readOnly placeholder="" className="p-2 pt-5 border-white-3 border-2 w-full outline-none peer" ref={ref}></input>
     <div className={`absolute text-grey-1 left-2 top-1/2 -translate-y-1/2 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:top-3 ${open ? 'top-3 text-xs' : ''} transition-all select-none`}>{placeholder}</div>
     <MdArrowDropDown className="w-8 h-8 absolute right-2 top-1/2 -translate-y-1/2 peer-focus:rotate-180 transition-transform" />

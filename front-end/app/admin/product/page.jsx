@@ -6,10 +6,11 @@ import { useProduct } from "@/app/product/hooks"
 import { Input, Select } from "@/ui"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Pie } from "react-chartjs-2"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { IoMdAddCircle } from "react-icons/io"
+import { IoCloseCircle } from "react-icons/io5"
 import { RiDeleteBack2Fill } from "react-icons/ri"
 
 const nav = ['Create', 'Charts', 'Products']
@@ -92,6 +93,12 @@ function Create() {
   const [options, setOptions] = useState([])
   const [recommendations, setRecommendations] = useState([])
   const [preview, setPreview] = useState()
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (open) document.body.style.overflow = 'hidden'
+    return () => document.body.style.overflow = 'auto'
+  }, [open])
 
   const handleAddOption = useCallback(() => {
     setOptions([...options, { key: "Type", name: 'Name', price: 0, avatar: 'https://image_url_here' }])
@@ -176,11 +183,15 @@ function Create() {
           options: A,
           recommendations: B
         })
-    }
+    },
   })
 
-  return <div className="flex gap-5 max-lg:flex-col">
-    <div className="flex flex-col gap-10 basis-1/2">
+  return <div>
+    <div className="flex flex-col gap-5 relative">
+      <div className="flex flex-col gap-5 sticky top-28 z-[1] w-max m-auto">
+        <button onClick={() => { mutation.mutateAsync(p => { setPreview(p); setOpen(true) }) }} className={`bg-green-600 py-2 px-5 text-white text-center hover:opacity-90 transition-opacity`}>PREVIEW</button>
+        {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
+      </div>
       <Input placeholder="Name" ref={nameRef} />
       <Input placeholder="Description" ref={descriptionRef} />
       <Input placeholder="Avatar url" ref={avatarRef} />
@@ -234,15 +245,21 @@ function Create() {
       </div>
     </div>
 
-    <div className="flex flex-col gap-10 basis-1/2">
-      <div onClick={() => mutation.mutate(setPreview)} className={`bg-red-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity`}>PREVIEW</div>
-      {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
-      {preview && <div className="max-h-[500px] overflow-y-auto"><ProductDetail product={preview} /></div>}
-      {preview && <div onClick={() => mutation.mutate(ProductAPI.create)} className={`bg-black-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
-        {mutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "CREATE PRODUCT"}
-      </div>}
-    </div>
-  </div>
+    {
+      open && <div className="fixed top-0 left-0 w-screen h-screen bg-black-1 bg-opacity-60 z-10">
+        <div className="p-10 bg-white-1 w-[90%] max-md:w-screen m-auto absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2  flex flex-col gap-5 ">
+          <IoCloseCircle onClick={() => setOpen(false)} className="w-8 h-8 absolute right-2 top-2" />
+          <div className="max-h-[70vh] overflow-y-auto">
+            <ProductDetail product={preview} />
+          </div>
+          <div onClick={() => mutation.mutate(async p => { await ProductAPI.create(p); setOpen(false) })} className={`bg-black-1 py-2 px-5 w-max mx-auto text-white text-center hover:opacity-90 btn transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
+            {mutation.isPending ? <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading m-auto" /> : "CREATE PRODUCT"}
+          </div>
+          {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
+        </div>
+      </div>
+    }
+  </div >
 }
 
 function Products() {
@@ -254,7 +271,7 @@ function Products() {
   return <div className="flex flex-col gap-10">
     {
       query.data.products.map(e => <div key={e._id} className="flex gap-5 items-center">
-        <img src={e.avatar} className="w-20 h-20 overflow-hidden object-cover"/>
+        <img src={e.avatar} className="w-20 h-20 overflow-hidden object-cover" />
         <Link href={'/admin/product/' + e._id} className="hover:text-red-1">{e._id}</Link>
         <div>{e.name}</div>
       </div>)

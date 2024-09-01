@@ -18,9 +18,9 @@ const Product = new mongoose.Schema({
     name: String,
     avatar: String,
     option: Object
-  }, { _id: false })],
+  }, { _id: false, minimize: false})],
   isDeleted: Boolean
-})
+}, { minimize: false })
 
 Product.index({ name: 'text' })
 

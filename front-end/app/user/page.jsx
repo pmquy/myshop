@@ -411,8 +411,8 @@ export default function Page() {
   const query = useQueries({
     queries: [
       {
-        queryKey: ['orders'],
-        queryFn: () => OrderAPI.find(),
+        queryKey: ['orders', { q: {} }],
+        queryFn: () => OrderAPI.find({ q: {} }),
         initialData: []
       }
     ]
@@ -439,7 +439,7 @@ export default function Page() {
       {index == 1 && <Orders orders={query[0].data} />}
       {index == 2 && <PersonalData />}
       {index == 3 && <Address />}
-      {index == 5 && <Vouchers/>}
+      {index == 5 && <Vouchers />}
     </div>
   </div >
 }
