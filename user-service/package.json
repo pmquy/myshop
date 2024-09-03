@@ -17,7 +17,9 @@
     "express": "^4.19.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.5.1"
+    "kafkajs": "^2.2.4",
+    "mongoose": "^8.5.1",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "dotenv": "^16.4.5",

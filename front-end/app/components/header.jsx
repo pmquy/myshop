@@ -1,12 +1,14 @@
 'use client'
 
-import { MdMenu, MdSearch } from "react-icons/md";
-import { RiUserLine } from "react-icons/ri";
+import { MdMenu, MdNotificationsNone, MdSearch } from "react-icons/md";
+import { RiNotification4Line, RiUserLine } from "react-icons/ri";
 import { PiShoppingCartSimpleBold } from "react-icons/pi";
 import { IoLocationOutline } from "react-icons/io5";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
+import { RiNotificationLine } from "react-icons/ri";
+import Notification from "./notification";
 
 export default function Header() {
   const [open, setOpen] = useState()
@@ -232,6 +234,7 @@ export default function Header() {
         <MdMenu onClick={() => setOpen(t => !t)} className={`w-10 h-10 p-2 ${open ? 'text-red-1' : ''} lg:hidden`} />
         <MdSearch className="w-10 h-10 p-2 hover:text-red-1" />
         <Link href={'/user'}><RiUserLine className=" w-10 h-10 p-2 hover:text-red-1" /></Link>
+        <Notification/>
         <Link onClick={() => setOpen(false)} href={'/user/cart'}><PiShoppingCartSimpleBold className=" hover:text-red-1 w-10 h-10 p-2" /></Link>
       </div>
     </div>

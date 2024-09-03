@@ -75,11 +75,11 @@ class Controller {
       const datasets = [
         {
           label: 'Total receiving price',
-          data: labels.map(e => payments.filter(t => t.status == 'Done' && new Date(t.updatedAt).toLocaleDateString() === e).reduce((prev, cur) => prev + cur.finalPrice, 0))
+          data: labels.map(e => payments.filter(t => t.status == 'Done' && new Date(t.updatedAt).toLocaleDateString("vi-VI") === e).reduce((prev, cur) => prev + cur.finalPrice, 0))
         },
         {
           label: 'Total pending price',
-          data: labels.map(e => payments.filter(t => t.status == 'Created' && new Date(t.createdAt).toLocaleDateString() === e).reduce((prev, cur) => prev + cur.finalPrice, 0))
+          data: labels.map(e => payments.filter(t => t.status == 'Created' && new Date(t.createdAt).toLocaleDateString("vi-VI") === e).reduce((prev, cur) => prev + cur.finalPrice, 0))
         },
       ]
       res.status(200).json({ status: 200, data: { labels, datasets } })

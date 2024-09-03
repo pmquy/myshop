@@ -26,7 +26,8 @@ const User = new mongoose.Schema({
   phoneNumber: {
     type: String,
     unique: true
-  }
+  },
+  isActivated: Boolean,
 })
 
 module.exports = mongoose.model('Users', User)

@@ -9,7 +9,7 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
   const [edit, setEdit] = useState()
 
   const price = useMemo(() => {
-    return Object.keys(product.options).reduce((prev, cur) => prev + option[cur] ? product.options[cur][option[cur]].price : 0, product.price)
+    return Object.keys(product.options).reduce((prev, cur) => prev + (option[cur] ? product.options[cur][option[cur]].price : 0), product.price)
   }, [option, product])
 
   const submitMutation = useMutation({
@@ -48,10 +48,10 @@ export default function Configure({ product, initialOption = {}, handleSubmit })
         index == 1 && <div className="flex max-lg:flex-col">
           <img src={product.avatar} className="object-cover object-center overflow-hidden grow" />
           <div className=" lg:w-[500px] text-xss flex flex-col gap-5 p-5 shrink-0">
-            <div className="max-h-[400px] overflow-y-auto grow overscroll-contain">
+            <div className="max-h-[450px] overflow-y-auto grow overscroll-contain">
               {
                 !edit ?
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-5">
                     {
                       Object.keys(product.options).map((e, i) => <div key={i} className="flex hover:text-red-1 btn justify-between items-center gap-5" onClick={() => setEdit(e)}>
                         <div className="text-nowrap overflow-x-hidden overflow-ellipsis"><b className=" capitalize">{e}: </b> {product.options[e][option[e]]?.name}</div>

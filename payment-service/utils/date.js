@@ -5,7 +5,7 @@ class DateUtils {
     if (startDate > endDate) return []
     const arr = []
     while (startDate <= endDate) {
-      arr.push(startDate.toLocaleDateString())
+      arr.push(startDate.toLocaleDateString("vi-VI"))
       startDate.setDate(startDate.getDate() + 1)
     }
     return arr

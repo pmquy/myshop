@@ -392,11 +392,10 @@ function Vouchers() {
     initialData: []
   })
   return <div className="flex flex-col gap-5">
-    {query.data.map(e => <div key={e._id} className="flex gap-5">
+    {query.data.map(e => <div key={e._id} className="flex gap-5 flex-wrap items-center">
       <div><b>Code: </b>{e.code}</div>
       <div><b>Quantity: </b>{e.quantity}</div>
-      <div className="text-xss text-green-600">{e.description}</div>
-      {!e.user && <div className="text">(For anyone)</div>}
+      <div className="text-xs text-green-600">{e.description}</div>
     </div>)}
   </div>
 }
@@ -426,6 +425,11 @@ export default function Page() {
 
   if (!user) {
     router.push('/user/login')
+    return <div></div>
+  }
+
+  if(user.role == "Admin") {
+    router.push('/admin')
     return <div></div>
   }
 

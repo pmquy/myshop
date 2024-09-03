@@ -9,5 +9,6 @@ import OrderAPI from "./order";
 import PaymentAPI from "./payment";
 import VoucherAPI from "./voucher"
 import ShippingAPI from "./shipping";
+import RatingAPI from './rating'
 
-export { ProductAPI, CartAPI, UserAPI, DesignerAPI, RoomAPI, CategoryAPI, PageAPI, OrderAPI, PaymentAPI, VoucherAPI, ShippingAPI}
+export { ProductAPI, CartAPI, UserAPI, DesignerAPI, RoomAPI, CategoryAPI, PageAPI, OrderAPI, PaymentAPI, VoucherAPI, ShippingAPI, RatingAPI}
