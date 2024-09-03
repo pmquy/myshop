@@ -62,26 +62,44 @@ const VALIDATORS = {
 
 class Controller {
   #genToken = (data) => {
-    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: "1d" })
+    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: "15m" })
   }
 
   #genActivatedToken = data => {
     return jwt.sign(data, process.env.ACTIVATED_TOKEN_SECRET, { expiresIn: "15m" })
   }
 
+  #genRefeshToken = data => {
+    return jwt.sign(data, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "30d" })
+  }
+
   login = async (req, res, next) => {
     try {
       const payload = await VALIDATORS.login.validateAsync(req.body)
-      const user = await User.findOne({ phoneNumber: payload.phoneNumber, isActivated: true})
-      if(!user) throw new E("User not found", 400)
+      const user = await User.findOne({ phoneNumber: payload.phoneNumber, isActivated: true })
+      if (!user) throw new E("User not found", 400)
       const r = bcrypt.compareSync(payload.password, user.password)
       if (!r) throw new E("Wrong password", 400)
       const token = this.#genToken({ _id: user._id })
+      const refreshToken = this.#genRefeshToken({ _id: user._id })
+      res.cookie('refresh_token', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'None', secure: true})
       res.setHeader('Authorization', `Bearer ${token}`)
       res.setHeader('Access-Control-Expose-Headers', 'Authorization')
       res.status(200).json({ status: 200, data: user })
     } catch (err) {
       next(new E(err.message))
+    }
+  }
+
+  refresh = async (req, res, next) => {
+    try {
+      const data = jwt.verify(req.cookies.refresh_token, process.env.REFRESH_TOKEN_SECRET)
+      const token = this.#genToken({ _id: data._id })
+      res.setHeader('Authorization', `Bearer ${token}`)
+      res.setHeader('Access-Control-Expose-Headers', 'Authorization')
+      res.status(200).json({ status: 200, data: "Refreshed" })
+    } catch (error) {
+      next(error)
     }
   }
 
@@ -153,7 +171,7 @@ class Controller {
       const user = User.findById(data._id)
       if (!user) throw new E("User not found", 400)
       await user.updateOne({ isActivated: true })
-      res.status(200).json({ status: 200, data: "Activated" })
+      res.redirect(`${process.env.FRONTEND_URL}/user/login`)
     } catch (err) {
       next(err)
     }

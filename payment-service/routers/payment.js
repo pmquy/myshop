@@ -1,7 +1,7 @@
 const controller = require('../controllers/payment')
 const router = require('express').Router()
 
-router.post('/:order/confirmPay', controller.confimrPayByOrder)
+router.post('/:order/confirmPay', controller.confirmPayByOrder)
 router.post('/:order/revokePay', controller.revokePayByOrder)
 router.get('/:order', controller.findByOrder)
 router.get('/', controller.find)

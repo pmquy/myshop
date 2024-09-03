@@ -10,5 +10,6 @@ import PaymentAPI from "./payment";
 import VoucherAPI from "./voucher"
 import ShippingAPI from "./shipping";
 import RatingAPI from './rating'
+import NotificationAPI from "./notification";
 
-export { ProductAPI, CartAPI, UserAPI, DesignerAPI, RoomAPI, CategoryAPI, PageAPI, OrderAPI, PaymentAPI, VoucherAPI, ShippingAPI, RatingAPI}
+export { NotificationAPI, ProductAPI, CartAPI, UserAPI, DesignerAPI, RoomAPI, CategoryAPI, PageAPI, OrderAPI, PaymentAPI, VoucherAPI, ShippingAPI, RatingAPI }

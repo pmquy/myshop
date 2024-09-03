@@ -22,25 +22,25 @@ class Controller {
       const query = { order: req.params.order }
       if (req.user.role != 'Admin') query.user = req.user._id
       const payment = await Payment.findOne(query)
-      if(!payment) throw new E("Payment not found", 400)
+      if (!payment) throw new E("Payment not found", 400)
       res.status(200).json({ status: 200, data: payment })
     } catch (error) {
       next(error)
     }
   }
 
-  confimrPayByOrder = async (req, res, next) => {
+  confirmPayByOrder = async (req, res, next) => {
     try {
       if (req.user?.role != 'Admin') throw new E('Invalid account', 403)
       const payment = await Payment.findOne({ order: req.params.order })
-      if(!payment) throw new E("Payment not found", 400)
+      if (!payment) throw new E("Payment not found", 400)
       if (payment.status != 'Pending') throw new E('The payment was done', 400)
       await payment.updateOne({ status: 'Done' })
       res.status(200).json({ status: 200, data: 'paid' })
       producer.send({
         topic: 'pay_order',
         messages: [
-          { value: payment.order }
+          { value: JSON.stringify({ order: payment.order, user: payment.user }) }
         ]
       })
     } catch (error) {
@@ -52,14 +52,14 @@ class Controller {
     try {
       if (req.user?.role != 'Admin') throw new E('Invalid account', 403)
       const payment = await Payment.findOne({ order: req.params.order })
-      if(!payment) throw new E("Payment not found", 400)
+      if (!payment) throw new E("Payment not found", 400)
       if (payment.status == 'Pending') throw new E('The payment was still pending', 400)
       await payment.updateOne({ status: 'Pending' })
       res.status(200).json({ status: 200, data: 'Revoked' })
       producer.send({
         topic: 'revoke_pay_order',
         messages: [
-          { value: payment.order }
+          { value: JSON.stringify({ order: payment.order, user: payment.user }) }
         ]
       })
     } catch (error) {

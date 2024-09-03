@@ -22,8 +22,8 @@ const consumer = kafka.consumer({ groupId: 'payment-group' })
 const connect = async () => {
   await producer.connect().catch(err => console.log(err.message))
   await consumer.connect().catch(err => console.log(err.message))
-  await consumer.subscribe({ topic: 'create_order', fromBeginning: true})
-  await consumer.subscribe({ topic: 'cancel_order', fromBeginning: true})
+  await consumer.subscribe({ topic: 'create_order' })
+  await consumer.subscribe({ topic: 'cancel_order' })
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       switch (topic) {
@@ -46,7 +46,7 @@ const connect = async () => {
           await Payment.create({ order: order._id, status: 'Pending', user: order.user, basePrice, shippingPrice, discountPrice, finalPrice })
           if (voucher) await voucher.updateOne({ quantity: voucher.quantity - 1 })
           break
-        
+
         case 'cancel_order':
           const id = message.value.toString()
           await Payment.findOneAndDelete({ order: id })

@@ -19,30 +19,30 @@ const connect = async () => {
   try {
     await producer.connect().catch(err => console.log(err.message))
     await consumer.connect().catch(err => console.log(err.message))
-    await consumer.subscribe({ topic: 'pay_order', fromBeginning: true })
-    await consumer.subscribe({ topic: 'ship_order', fromBeginning: true })
-    await consumer.subscribe({ topic: 'revoke_pay_order', fromBeginning: true })
-    await consumer.subscribe({ topic: 'ship_done', fromBeginning: true })
+    await consumer.subscribe({ topic: 'pay_order' })
+    await consumer.subscribe({ topic: 'ship_order' })
+    await consumer.subscribe({ topic: 'revoke_pay_order' })
+    await consumer.subscribe({ topic: 'ship_done' })
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         switch (topic) {
           case 'pay_order': {
-            const id = message.value.toString()
-            await Order.findOneAndUpdate({ _id: id, status: "Created" }, { status: 'Paid' })
+            const { order } = JSON.parse(message.value.toString())
+            await Order.findOneAndUpdate({ _id: order, status: "Created" }, { status: 'Paid' })
             break
           }
           case 'revoke_pay_order': {
-            const id = message.value.toString()
-            await Order.findOneAndUpdate({ _id: id, status: "Paid" }, { status: 'Created' })
+            const { order } = JSON.parse(message.value.toString())
+            await Order.findOneAndUpdate({ _id: order, status: "Paid" }, { status: 'Created' })
             break
           }
           case 'ship_order': {
-            const id = message.value.toString()
-            await Order.findOneAndUpdate({ _id: id, status: "Paid" }, { status: 'Shipping' })
+            const { order } = JSON.parse(message.value.toString())
+            await Order.findOneAndUpdate({ _id: order, status: "Paid" }, { status: 'Shipping' })
             break
           }
           case 'ship_done': {
-            const id = message.value.toString()
+            const { order: id } = JSON.parse(message.value.toString())
             const order = await Order.findById(id)
             producer.send({ topic: 'complete_order', messages: [{ value: JSON.stringify(order) }] })
             await order.updateOne({ status: "Done" })

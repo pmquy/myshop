@@ -25,7 +25,7 @@ class Controller {
       payload.status = "Created"
       await Shipping.create(payload)
       res.status(200).json({ status: 200, data: "Created" })
-      producer.send({ topic: 'ship_order', messages: [{ value: payload.order }] })
+      producer.send({ topic: 'ship_order', messages: [{ value: JSON.stringify({ order: payload.order, user: payload.user }) }] })
     } catch (error) {
       next(error)
     }
@@ -99,7 +99,7 @@ class Controller {
       if (!shipping) throw new E("Shipment not found")
       await shipping.updateOne({ status: "Done" })
       res.status(200).json({ status: 200, data: "Done" })
-      producer.send({ topic: 'ship_done', messages: [{ value: shipping.order }] })
+      producer.send({ topic: 'ship_done', messages: [{ value: JSON.stringify({ order: shipping.order, user: shipping.user }) }] })
     } catch (error) {
       next(error)
     }
