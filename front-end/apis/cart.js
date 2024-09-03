@@ -1,11 +1,11 @@
-import ProductAPI from "./product"
+import { parseQuery } from "@/utils"
 const url = process.env.NEXT_PUBLIC_CART_SERVICE ? process.env.NEXT_PUBLIC_CART_SERVICE : process.env.NEXT_PUBLIC_SERVER_URL
 
 
 class Api {
 
-  find = async (query = {}) => {
-    return fetch(`${url}/carts?q=${JSON.stringify(query)}`, {
+  find = async (query) => {
+    return fetch(`${url}/carts${parseQuery(query)}`, {
       headers: {
         'Authorization': localStorage.getItem('access_token')
       }

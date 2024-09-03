@@ -3,8 +3,8 @@ const Joi = require('joi')
 const User = require('../models/user')
 const E = require('../utils/error')
 const jwt = require('jsonwebtoken')
+const { producer } = require('../configs/kafka')
 
-const EXPIRE_IN = 60 * 60 * 24
 
 const VALIDATORS = {
   create: Joi.object({
@@ -62,13 +62,18 @@ const VALIDATORS = {
 
 class Controller {
   #genToken = (data) => {
-    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: EXPIRE_IN })
+    return jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: "1d" })
+  }
+
+  #genActivatedToken = data => {
+    return jwt.sign(data, process.env.ACTIVATED_TOKEN_SECRET, { expiresIn: "15m" })
   }
 
   login = async (req, res, next) => {
     try {
       const payload = await VALIDATORS.login.validateAsync(req.body)
-      const user = await User.findOne({ phoneNumber: payload.phoneNumber })
+      const user = await User.findOne({ phoneNumber: payload.phoneNumber, isActivated: true})
+      if(!user) throw new E("User not found", 400)
       const r = bcrypt.compareSync(payload.password, user.password)
       if (!r) throw new E("Wrong password", 400)
       const token = this.#genToken({ _id: user._id })
@@ -90,7 +95,6 @@ class Controller {
       if (!req.user) throw new E('You must login', 401)
       const payload = await VALIDATORS.update.validateAsync(req.body)
       const user = await User.findByIdAndUpdate(req.user._id, payload, { new: true })
-      // setTimeout(() => res.status(200).json({ status: 200, data: user }), 2000)
       return res.status(200).json({ status: 200, data: user })
     } catch (err) {
       next(err)
@@ -122,9 +126,11 @@ class Controller {
 
   create = async (req, res, next) => {
     try {
-      const payload = { ...await VALIDATORS.create.validateAsync(req.body), role: 'Customer' }
-      await User.create(payload)
-      return res.status(200).send({ status: 200, data: 'Created' })
+      const payload = { ...await VALIDATORS.create.validateAsync(req.body), role: 'Customer', isActivated: false }
+      const user = await User.create(payload)
+      const token = this.#genActivatedToken({ _id: user._id })
+      res.status(200).send({ status: 200, data: 'Created' })
+      producer.send({ topic: 'create_user', messages: [{ value: JSON.stringify({ user, token }) }] })
     } catch (err) {
       next(new E(err.message))
     }
@@ -135,6 +141,19 @@ class Controller {
       if (req.user?.role != 'Admin') throw new E('Invalid account', 403)
       const users = await User.find(req.query)
       res.status(200).json({ status: 200, data: users })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  activate = async (req, res, next) => {
+    try {
+      const token = req.query.token
+      const data = jwt.verify(token, process.env.ACTIVATED_TOKEN_SECRET)
+      const user = User.findById(data._id)
+      if (!user) throw new E("User not found", 400)
+      await user.updateOne({ isActivated: true })
+      res.status(200).json({ status: 200, data: "Activated" })
     } catch (err) {
       next(err)
     }

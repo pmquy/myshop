@@ -21,7 +21,7 @@ class Controller {
     try {
       if (!req.user) throw new E("You must login", 401)
       const payload = await VALIDATORS.create.validateAsync(req.body)
-      await Cart.create({ ...payload, user: req.user._id, quantity: 1})
+      await Cart.create({ ...payload, user: req.user._id, quantity: 1 })
       res.status(200).json({ status: 200, data: "Created" })
     } catch (error) {
       next(error)
@@ -31,18 +31,23 @@ class Controller {
   find = async (req, res, next) => {
     try {
       if (!req.user) throw new E("You must login", 401)
-      const carts = await Cart.find({ ...JSON.parse(req.query.q), user: req.user._id })
-      res.status(200).json({ status: 200, data: carts })
+      const query = JSON.parse(req.query.q); query.user = req.user._id
+      const page = Number.parseInt(req.query.page)
+      const limit = Number.parseInt(req.query.limit)
+      const carts = await Cart.find(query).skip(page * limit).limit(limit)
+      const length = await Cart.countDocuments(query)
+      res.status(200).json({ status: 200, data: { carts, hasMore: length > (page + 1) * limit } })
     } catch (error) {
       next(error)
     }
   }
 
-  updateById = async(req, res, next) => {
+  updateById = async (req, res, next) => {
     try {
       if (!req.user) throw new E("You must login", 401)
       const cart = await Cart.findById(req.params.id)
-      if(cart.user != req.user._id) throw new E("Cart not found", 403)
+      if (!cart) throw new E("Cart not found", 400)
+      if (cart.user != req.user._id) throw new E("Cart not found", 403)
       const payload = await VALIDATORS.update.validateAsync(req.body)
       await cart.updateOne(payload)
       res.status(200).json({ status: 200, data: "Updated" })
@@ -50,23 +55,23 @@ class Controller {
       next(error)
     }
   }
-  
-  findById = async(req, res, next) => {
+
+  findById = async (req, res, next) => {
     try {
       if (!req.user) throw new E("You must login", 401)
       const cart = await Cart.findById(req.params.id)
-      if(cart.user != req.user._id) throw new E("Cart not found", 403)
+      if (cart.user != req.user._id) throw new E("Cart not found", 403)
       res.status(200).json({ status: 200, data: cart })
     } catch (error) {
       next(error)
     }
   }
 
-  deleteById = async(req, res, next) => {
+  deleteById = async (req, res, next) => {
     try {
       if (!req.user) throw new E("You must login", 401)
       const cart = await Cart.findById(req.params.id)
-      if(cart.user != req.user._id) throw new E("Cart not found", 403)
+      if (cart.user != req.user._id) throw new E("Cart not found", 403)
       await cart.deleteOne()
       res.status(200).json({ status: 200, data: "Deleted" })
     } catch (error) {

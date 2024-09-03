@@ -20,8 +20,14 @@ function Tracking({ order }) {
 
 function ConfirmShipment({ order, setStatus}) {
   const mutation = useMutation({
-    mutationFn: () => { if (confirm("Confirm receiving order")) return ShippingAPI.confirmByOrder(order) },
-    onSuccess: () => setStatus("Done")
+    mutationFn: () => { if (confirm("Confirm receiving order")) return ShippingAPI.confirmByOrder(order._id) },
+    onSuccess: () => {
+      setStatus("Done")
+      let products = localStorage.getItem('products_to_rate')
+      products = products ? JSON.parse(products) : []
+      new Set(order.items.map(e => e.product)).forEach(e => products.push(e))
+      localStorage.setItem("products_to_rate", JSON.stringify(products))
+    }
   })
   return <div className="flex flex-col gap-5">
     <button onClick={mutation.mutate} className={`bg-black-1 w-max m-auto py-2 px-5 text-white text-center hover:opacity-90 transition-opacity ${mutation.isPending ? ' pointer-events-none' : ''}`}>
@@ -33,7 +39,7 @@ function ConfirmShipment({ order, setStatus}) {
 
 export default function Shipping({ order, status, setStatus }) {
   return <div className="flex flex-col gap-5">
-    {(status === "Shipping"  || status === "Done") && <Tracking order={order}/>}
+    {(status === "Shipping"  || status === "Done") && <Tracking order={order._id}/>}
     {status === "Shipping" && <ConfirmShipment order={order} setStatus={setStatus}/>}
   </div>
 }

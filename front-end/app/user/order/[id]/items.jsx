@@ -22,7 +22,7 @@ function Item({ item }) {
 
 
   return <div className="p-5 flex flex-col gap-2 text-xss">
-    <img src={product.avatar} className="w-60"></img>
+    <img src={product.avatar} className="w-60 m-auto"></img>
     <Link href={'/product/detail/' + product._id}><div className="text-xl font-semibold hover:text-red-1">{product.name}</div></Link>
     {Object.keys(item.option ? item.option : {}).map((e, i) => <div key={i}><b className="capitalize">{e}: </b>{product.options[e][item.option[e]].name}</div>)}
     <div><b>Quantity: </b>{item.quantity}</div>
@@ -33,7 +33,7 @@ function Item({ item }) {
 export default function Items({ items }) {
   return <div style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))' }} className="grid gap-5">
     {
-      items.map((e, i) => <div className="m-auto" key={i}>
+      items.map((e, i) => <div key={i}>
         <Item item={e} />
       </div>)
     }

@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 
 const Rating = new mongoose.Schema({
   comment: String,
+  star: Number,
   user: String,
   displayName: String,
   product: String,
-  star: Number,
   status: {
     type: String,
     enum: ["Pending", "Done"]

@@ -14,8 +14,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <Layout>{children}</Layout>
-        {/* {children} */}
-        <Script type="module" src="https://unpkg.com/@splinetool/viewer@1.8.9/build/spline-viewer.js"></Script>
       </body>
     </html>
   );

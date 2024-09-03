@@ -33,8 +33,8 @@ export default function Page() {
     <div className="p-10 bg-white flex flex-col gap-5">
       {index === 0 && <Summary order={query.data} status={status} />}
       {index === 1 && <Items items={query.data.items} />}
-      {index === 2 && <Payment order={query.data._id} status={status} setStatus={setStatus}/>}
-      {index === 3 && <Shipping order={query.data._id} status={status} setStatus={setStatus}/>}
+      {index === 2 && <Payment order={query.data} status={status} setStatus={setStatus}/>}
+      {index === 3 && <Shipping order={query.data} status={status} setStatus={setStatus}/>}
     </div>
   </div>
 }

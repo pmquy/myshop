@@ -6,6 +6,7 @@ import Link from "next/link";
 import Configure from "./configure";
 import { DesignerAPI } from "@/apis";
 import { useProduct } from "../../hooks";
+import Rating from "./rating";
 
 const goTo = id => {
   var top = document.getElementById(id).getBoundingClientRect().top;
@@ -39,7 +40,9 @@ function Slider({ images }) {
           isPress = false
           let a = ref.current.scrollLeft
           ref.current.classList.add('snap-x')
+          console.log(a)
           let b = ref.current.scrollLeft
+          console.log(b)
           ref.current.classList.remove('snap-x')
           ref.current.scrollLeft = a
           ref.current.scrollTo({
@@ -48,16 +51,38 @@ function Slider({ images }) {
           })
         }
       }
+
+      const handleTouchStart = e => {
+        if (!isPress) {
+          isPress = true
+          posX = e.touches[0].pageX
+          scrollLeft = ref.current.scrollLeft
+        }
+      }
+      const handleTouchMove = e => {
+        if (isPress) {
+          ref.current.scrollLeft = scrollLeft + (posX - e.touches[0].pageX) * 1.5
+        }
+      }
+
       ref.current.addEventListener('mousedown', handleMouseDown)
       ref.current.addEventListener('mousemove', handleMouseMove)
       ref.current.addEventListener('mouseup', handleMouseLeave)
       ref.current.addEventListener('mouseleave', handleMouseLeave)
+      ref.current.addEventListener('touchstart', handleTouchStart);
+      ref.current.addEventListener('touchmove', handleTouchMove);
+      ref.current.addEventListener('touchend', handleMouseLeave);
+      ref.current.addEventListener("touchcancel", handleMouseLeave);
       return () => {
         if (ref.current) {
           ref.current.removeEventListener('mousedown', handleMouseDown)
           ref.current.removeEventListener('mousemove', handleMouseMove)
           ref.current.removeEventListener('mouseup', handleMouseLeave)
           ref.current.removeEventListener('mouseleave', handleMouseLeave)
+          ref.current.removeEventListener('touchstart', handleTouchStart);
+          ref.current.removeEventListener('touchmove', handleTouchMove);
+          ref.current.removeEventListener('touchend', handleMouseLeave);
+          ref.current.removeEventListener('touchcancel', handleMouseLeave);
         }
       }
     }
@@ -115,6 +140,7 @@ export default function ProductDetail({ product, handleSubmit }) {
     <div id="inspirations" ><Introduction product={product} /></div>
     <Slider images={product.images} />
     <div id="configure"><Configure product={product} handleSubmit={handleSubmit} /></div>
+    <div id="ratings"><Rating product_id={product._id} /></div>
     <div id="designer"><Designer product={product} /></div>
   </div>
 }

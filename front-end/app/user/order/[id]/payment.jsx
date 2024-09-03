@@ -41,7 +41,7 @@ function CancelOrder({ order, setStatus }) {
 
 export default function Payment({ order, status, setStatus }) {
   return <div className="flex flex-col gap-5">
-    {status != "Canceled" && <PaymentDetail status={status} order={order} />}
-    {status === "Created" && <CancelOrder order={order} setStatus={setStatus} />}
+    {status != "Canceled" && <PaymentDetail status={status} order={order._id} />}
+    {status === "Created" && <CancelOrder order={order._id} setStatus={setStatus} />}
   </div>
 }
