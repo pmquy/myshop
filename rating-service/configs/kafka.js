@@ -18,7 +18,7 @@ const consumer = kafka.consumer({ groupId: 'rating-group' })
 const connect = async () => {
   await producer.connect().catch(err => console.log(err.message))
   await consumer.connect().catch(err => console.log(err.message))
-  await consumer.subscribe({ topic: 'complete_order', fromBeginning: true })
+  await consumer.subscribe({ topic: 'complete_order' })
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       switch (topic) {
