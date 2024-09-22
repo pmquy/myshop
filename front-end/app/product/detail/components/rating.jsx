@@ -1,16 +1,16 @@
 'use client'
 
 import { RatingAPI } from "@/apis"
+import { useMetaData } from "@/app/hooks"
 import { parseDate } from "@/utils"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { FaStar, FaUser } from "react-icons/fa"
 
-function List({ product_id }) {
+function List({ product_id, ratings, setRatings }) {
   const pageRef = useRef(0)
   const hasMoreRef = useRef(true)
-  const [ratings, setRatings] = useState([])
 
   const mutation = useMutation({
     mutationFn: () => RatingAPI.find({ q: { product: product_id, status: "Done" }, page: pageRef.current, limit: 5 }).then(res => {
@@ -47,13 +47,14 @@ function List({ product_id }) {
     }
     {ratings.length === 0 && <div>No rating found</div>}
     {hasMoreRef.current && <button onClick={mutation.mutate} className="text-grey-1 hover:text-red-1 text-center">Load more</button>}
+    {mutation.isPending && <AiOutlineLoading3Quarters className="w-8 h-8 mx-auto animate-loading" />}
   </div>
 }
 
-function CreateRating({ product_id }) {
+function CreateRating({ product_id, setRatings }) {
   const commentRef = useRef()
   const [star, setStar] = useState(5)
-  const queryClient = useQueryClient()
+  const { user } = useMetaData()
 
   const mutation = useMutation({
     mutationFn: () => {
@@ -64,7 +65,7 @@ function CreateRating({ product_id }) {
         product: product_id
       })
     },
-    onSuccess: () => queryClient.invalidateQueries(['ratings'])
+    onSuccess: (data) => setRatings(prev => [{ comment: commentRef.current.value, star, updatedAt: Date.now(), displayName: user.firstName + ' ' + user.lastName }, ...prev])
   })
 
   return <div className="flex flex-col gap-5 m-auto sticky top-72 bg-white-1 card p-5">
@@ -88,15 +89,16 @@ function Title({ product_id }) {
 }
 
 export default function Rating({ product_id }) {
+  const [ratings, setRatings] = useState([])
 
   return <div className="">
     <Title product_id={product_id} />
     <div className="flex gap-10 max-lg:flex-col max-lg:p-5 p-10 ">
       <div className="grow">
-        <List product_id={product_id} />
+        <List ratings={ratings} setRatings={setRatings} product_id={product_id} />
       </div>
       <div className="relative lg:w-[300px]">
-        <CreateRating product_id={product_id} />
+        <CreateRating product_id={product_id} setRatings={setRatings} />
       </div>
     </div>
   </div>

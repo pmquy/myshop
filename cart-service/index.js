@@ -1,5 +1,5 @@
 require('dotenv').config()
-require('./configs/mongodb')()
+require('./configs/mongodb').connect()
 
 const express = require('express')
 const app = express()

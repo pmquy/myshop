@@ -3,7 +3,7 @@ const Joi = require('joi')
 const User = require('../models/user')
 const E = require('../utils/error')
 const jwt = require('jsonwebtoken')
-const { producer } = require('../configs/kafka')
+const RabbitMQ = require('../configs/rabbitmq')
 
 
 const VALIDATORS = {
@@ -82,7 +82,7 @@ class Controller {
       if (!r) throw new E("Wrong password", 400)
       const token = this.#genToken({ _id: user._id })
       const refreshToken = this.#genRefeshToken({ _id: user._id })
-      res.cookie('refresh_token', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'None', secure: true})
+      res.cookie('refresh_token', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'None', secure: true })
       res.setHeader('Authorization', `Bearer ${token}`)
       res.setHeader('Access-Control-Expose-Headers', 'Authorization')
       res.status(200).json({ status: 200, data: user })
@@ -148,7 +148,7 @@ class Controller {
       const user = await User.create(payload)
       const token = this.#genActivatedToken({ _id: user._id })
       res.status(200).send({ status: 200, data: 'Created' })
-      producer.send({ topic: 'create_user', messages: [{ value: JSON.stringify({ user, token }) }] })
+      RabbitMQ.produce('create_user', { user, token })
     } catch (err) {
       next(new E(err.message))
     }

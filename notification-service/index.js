@@ -1,7 +1,7 @@
 require('dotenv').config()
 require('./configs/mongodb').connect()
 require('./configs/redis').connect()
-require('./configs/kafka').connect()
+require('./configs/rabbitmq').connect()
 
 const express = require('express')
 const app = express()
@@ -18,5 +18,5 @@ app.use(handle404)
 app.use(handleError)
 
 const PORT = process.env.PORT || 5004
-app.listen(PORT, () => console.log("Order service is running on port", PORT))
+app.listen(PORT, () => console.log("Notification service is running on port", PORT))
 

@@ -17,12 +17,13 @@ function CreateShipment({ order, setStatus }) {
     mutationFn: () => {
       if (!shippingCode.current.value) throw new Error("Shipping code is empty")
       if (!providerRef.current.value) throw new Error("Provider is empty")
-      return ShippingAPI.create({
-        order: order._id,
-        user: order.user,
-        shippingCode: shippingCode.current.value,
-        provider: providerRef.current.value
-      })
+      if (confirm("Create a shipmemt"))
+        return ShippingAPI.create({
+          order: order._id,
+          user: order.user,
+          shippingCode: shippingCode.current.value,
+          provider: providerRef.current.value
+        })
     },
     onSuccess: () => setStatus("Shipping")
   })
@@ -55,10 +56,11 @@ function ShippingDetail({ order }) {
     mutationFn: () => {
       if (!shippingCode.current.value) throw new Error("Shipping code is empty")
       if (!providerRef.current.value) throw new Error("Provider is empty")
-      return ShippingAPI.updateByOrder(order, {
-        shippingCode: shippingCode.current.value,
-        provider: providerRef.current.value
-      })
+      if (confirm("Update ?"))
+        return ShippingAPI.updateByOrder(order, {
+          shippingCode: shippingCode.current.value,
+          provider: providerRef.current.value
+        })
     }
   })
 

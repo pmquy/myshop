@@ -144,13 +144,12 @@ function Update({ originalProduct }) {
         return callback.call(null, update)
       }
     },
-    onSuccess: () => setOpen(prev => !prev)
   })
 
   return <div>
     <div className="flex flex-col gap-5 relative">
       <div className="flex flex-col gap-5 sticky top-28 z-[1] w-max m-auto">
-        <button onClick={() => mutation.mutate(update => setPreview({ ...originalProduct, ...update }))} className={`bg-green-600 py-2 px-5 text-white text-center hover:opacity-90 transition-opacity`}>PREVIEW</button>
+        <button onClick={() => mutation.mutate(update => {setPreview({ ...originalProduct, ...update }); setOpen(true)})} className={`bg-green-600 py-2 px-5 text-white text-center hover:opacity-90 transition-opacity`}>PREVIEW</button>
         {mutation.isError && <div className="text-xss text-center text-red-1">{mutation.error.message}</div>}
       </div>
       <Input placeholder="Name" ref={nameRef} defaultValue={product.name} />

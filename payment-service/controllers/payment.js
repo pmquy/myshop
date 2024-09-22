@@ -1,5 +1,5 @@
 const { Payment } = require('../models')
-const { producer } = require('../configs/kafka')
+const RabbitMQ = require('../configs/rabbitmq')
 const { DateUtils, E } = require('../utils')
 
 class Controller {
@@ -37,12 +37,7 @@ class Controller {
       if (payment.status != 'Pending') throw new E('The payment was done', 400)
       await payment.updateOne({ status: 'Done' })
       res.status(200).json({ status: 200, data: 'paid' })
-      producer.send({
-        topic: 'pay_order',
-        messages: [
-          { value: JSON.stringify({ order: payment.order, user: payment.user }) }
-        ]
-      })
+      RabbitMQ.produce('pay_order', { order: payment.order, user: payment.user })
     } catch (error) {
       next(error)
     }
@@ -56,12 +51,7 @@ class Controller {
       if (payment.status == 'Pending') throw new E('The payment was still pending', 400)
       await payment.updateOne({ status: 'Pending' })
       res.status(200).json({ status: 200, data: 'Revoked' })
-      producer.send({
-        topic: 'revoke_pay_order',
-        messages: [
-          { value: JSON.stringify({ order: payment.order, user: payment.user }) }
-        ]
-      })
+      RabbitMQ.produce('revoke_pay_order', { order: payment.order, user: payment.user })
     } catch (error) {
       next(error)
     }
@@ -79,7 +69,7 @@ class Controller {
         },
         {
           label: 'Total pending price',
-          data: labels.map(e => payments.filter(t => t.status == 'Created' && new Date(t.createdAt).toLocaleDateString("vi-VI") === e).reduce((prev, cur) => prev + cur.finalPrice, 0))
+          data: labels.map(e => payments.filter(t => t.status == 'Pending' && new Date(t.createdAt).toLocaleDateString("vi-VI") === e).reduce((prev, cur) => prev + cur.finalPrice, 0))
         },
       ]
       res.status(200).json({ status: 200, data: { labels, datasets } })

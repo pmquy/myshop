@@ -34,7 +34,7 @@ class Controller {
       const query = JSON.parse(req.query.q); query.user = req.user._id
       const page = Number.parseInt(req.query.page)
       const limit = Number.parseInt(req.query.limit)
-      const carts = await Cart.find(query).skip(page * limit).limit(limit)
+      const carts = await Cart.find(query).sort({ updatedAt: -1 }).skip(page * limit).limit(limit)
       const length = await Cart.countDocuments(query)
       res.status(200).json({ status: 200, data: { carts, hasMore: length > (page + 1) * limit } })
     } catch (error) {

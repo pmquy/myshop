@@ -5,10 +5,11 @@ import { useMetaData } from "../hooks"
 import { useEffect, useRef, useState } from "react"
 import { Input, Select, Radio } from "@/ui"
 import { useMutation, useQueries, useQuery } from "@tanstack/react-query"
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { OrderAPI, PageAPI, UserAPI, VoucherAPI } from "@/apis"
 import { parseDate } from "@/utils"
 import Link from "next/link"
+import { MdLogout } from "react-icons/md"
 
 function Summary({ setIndex, orders = [] }) {
   const { user } = useMetaData()
@@ -434,7 +435,7 @@ export default function Page() {
   }
 
   return <div className="bg-white-4 lg:px-5 py-10">
-    <div className="text-4xl font-semibold text-center py-10">Your account</div>
+    <div className="text-4xl font-semibold text-center py-10 flex gap-5 justify-center items-center">Your account <Link className=" text-grey-1 hover:text-red-1" href={"/user/login"}><MdLogout className="w-8 h-8"/></Link></div>
     <div className="flex gap-10 font-semibold overflow-y-auto py-5 px-10">
       {nav.map((e, i) => <div key={i} onClick={() => setIndex(i)} className={` ${index == i ? 'text-red-1' : 'hover:text-red-1'} shrink-0 btn`}>{e}</div>)}
     </div>

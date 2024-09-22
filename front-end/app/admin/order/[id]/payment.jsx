@@ -24,7 +24,9 @@ function PaymentDetail({ order }) {
 
 function ConfirmPayment({ order, setStatus }) {
   const mutation = useMutation({
-    mutationFn: () => PaymentAPI.confirmPayByOrder(order),
+    mutationFn: () => {
+      if(confirm("Confirm ?")) return PaymentAPI.confirmPayByOrder(order)
+    },
     onSuccess: () => setStatus("Paid")
   })
   return <div className="flex flex-col gap-5 w-max m-auto">
@@ -37,7 +39,9 @@ function ConfirmPayment({ order, setStatus }) {
 
 function RevokePayment({ order, setStatus }) {
   const mutation = useMutation({
-    mutationFn: () => PaymentAPI.revokePayByOrder(order),
+    mutationFn: () => {
+      if(confirm("Confirm ?")) return PaymentAPI.revokePayByOrder(order)
+    },
     onSuccess: () => setStatus("Created")
   })
   return <div className="flex flex-col gap-5 w-max m-auto">

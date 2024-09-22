@@ -1,13 +1,12 @@
 'use client'
 
-import { MdMenu, MdNotificationsNone, MdSearch } from "react-icons/md";
-import { RiNotification4Line, RiUserLine } from "react-icons/ri";
+import { MdMenu, MdSearch } from "react-icons/md";
+import { RiUserLine } from "react-icons/ri";
 import { PiShoppingCartSimpleBold } from "react-icons/pi";
 import { IoLocationOutline } from "react-icons/io5";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
-import { RiNotificationLine } from "react-icons/ri";
 import Notification from "./notification";
 
 export default function Header() {
@@ -18,7 +17,7 @@ export default function Header() {
     return () => document.body.style.overflowY = 'auto'
   }, [open])
 
-  return <div className="flex flex-col px-5 py-2 bg-white font-medium">
+  return <div className="flex flex-col px-5 py-2 bg-white backdrop-blur-sm bg-opacity-60 font-medium">
     <div className=" flex justify-end items-center text-grey-1 text-xss">
       <IoLocationOutline className=" w-4 h-4" />
       <div className="hover:text-red-1 ml-1 mr-3">Find LokiKurri</div>
@@ -209,7 +208,7 @@ export default function Header() {
             </div>
           </div>
           <div className="group max-lg:p-5">
-            <Link onClick={() => setOpen(false)} href={'/'}><div className=" hover:text-red-1 p-2">About LokiKurri</div></Link>
+            <Link onClick={() => setOpen(false)} href={'/'}><div className=" hover:text-red-1 p-2">About</div></Link>
             <div className={`lg:absolute lg:max-h-0 lg:opacity-0 lg:w-screen lg:group-hover:max-h-screen lg:group-hover:opacity-100 lg:group-hover:p-5 lg:transition-[max-height] lg:duration-500 lg:left-0 lg:overflow-hidden max-lg:flex-col max-lg:px-10 bg-white-1 flex  gap-10 `}>
               <div className="flex flex-col gap-2">
                 <div className=" text-grey-1 ">Seating furniture</div>
@@ -231,7 +230,7 @@ export default function Header() {
         </div>
       </div>
       <div className="flex items-end">
-        <MdMenu onClick={() => setOpen(t => !t)} className={`w-10 h-10 p-2 ${open ? 'text-red-1' : ''} lg:hidden`} />
+        <MdMenu onClick={() => setOpen(t => !t)} className={`w-10 btn h-10 p-2 ${open ? 'text-red-1' : ''} lg:hidden`} />
         <MdSearch className="w-10 h-10 p-2 hover:text-red-1" />
         <Link href={'/user'}><RiUserLine className=" w-10 h-10 p-2 hover:text-red-1" /></Link>
         <Notification/>

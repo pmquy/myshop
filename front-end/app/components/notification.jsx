@@ -16,7 +16,7 @@ function List({ open, setOpen }) {
 
   const mutation = useMutation({
     mutationFn: () => {
-      return NotificationAPI.find({ q: {}, page: pageRef.current, limit: 5 })
+      return NotificationAPI.find({ q: {}, page: pageRef.current, limit: 10 })
     },
     onSuccess: (res) => {
       setNotifications(prev => [...prev, ...res.notifications])
@@ -45,19 +45,19 @@ function List({ open, setOpen }) {
     }
   }, [open])
 
-  return <div className="relative bg-white-2 w-[500px]">
-    <div className={`text-xss  ${open ? 'max-h-96' : 'max-h-0'} transition-all overflow-y-auto duration-500 flex flex-col `}>
+  return <div className="relative">
+    <div className={`text-xss  ${open ? 'max-h-96 border-2 border-red-1' : 'max-h-0'} transition-all overflow-y-auto overscroll-contain duration-500 flex flex-col `}>
       {
         notifications.map(e =>
           <Link href={e.link} onClick={() => setOpen(false)} key={e._id} className=" py-2 px-5 hover:bg-white-3">
             <div className=" break-all">{e.message}</div>
-            <div className="text-red-1 text-end">{parseDate(e.createdAt)}</div>
+            <div className="text-red-1 text-xs text-end">{parseDate(e.createdAt)}</div>
           </Link>
         )
       }
       <div ref={ref}></div>
     </div>
-    {mutation.isPending && notifications.length !== 0 && <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading mx-auto absolute bottom-2 left-1/2 -translate-x-1/2" />}
+    {mutation.isPending && <AiOutlineLoading3Quarters className="w-8 h-8 animate-loading mx-auto absolute bottom-2 left-1/2 -translate-x-1/2" />}
   </div>
 }
 
@@ -68,6 +68,6 @@ export default function Notification() {
 
   return <div className="relative">
     <RiNotification4Line onClick={() => setOpen(prev => !prev)} className={`w-10 h-10 btn rounded-full p-2 ${open ? "bg-red-1 text-white-1" : "hover:text-red-1"} `} />
-    {user && <div className={`absolute -bottom-2 translate-y-full right-0`}><List open={open} setOpen={setOpen} user={user._id} /></div>}
+    {user && <div className={`absolute md:-bottom-2 md:translate-y-full right-0 bg-white-2 w-[500px] max-md:fixed max-md:top-[85px] max-md:left-0 max-md:w-screen`}><List open={open} setOpen={setOpen} user={user._id} /></div>}
   </div>
 }

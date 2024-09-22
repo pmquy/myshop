@@ -19,15 +19,17 @@ const goTo = id => {
 function Navbar({ product }) {
 
   return <div className=" flex gap-5 items-center justify-between p-5 bg-black-1 text-grey-1 text-nowrap overflow-hidden">
-    <div>
-      <Link className="hover:text-white-1" href={'/'}>LokiKurri</Link>/<Link className="hover:text-white-1" href={'/product'}>Products</Link>/<Link className="hover:text-white-1" href={'/product/detail/' + product._id}>{product.name}</Link>
+    <div className="flex max-lg:hidden">
+      <Link className="hover:text-white-1" href={'/'}>LokiKurri</Link>
+      /
+      <Link className="hover:text-white-1" href={'/product'}>Products</Link>
+      /<Link className="hover:text-white-1 max-w-60 overflow-ellipsis overflow-hidden" href={'/product/detail/' + product._id}>{product.name}</Link>
     </div>
     <div className="flex gap-5 items-center">
       <div className="hover:text-white-2" onClick={() => goTo('inspirations')}>Inspirations</div>
       <div className="hover:text-white-2" onClick={() => goTo('configure')}>Configure</div>
       <div className="hover:text-white-2" onClick={() => goTo('configure')}>Information</div>
       <div className="hover:text-white-2" onClick={() => goTo('ratings')}>Ratings</div>
-      <div className="hover:text-white-2" onClick={() => goTo('configure')}>Product family</div>
       <div className="hover:text-white-2" onClick={() => goTo('designer')}>Designer</div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 const { Order } = require('../models')
 const Joi = require('joi')
 const { E, DateUtils } = require('../utils')
-const { producer } = require('../configs/kafka')
+const RabbitMQ = require('../configs/rabbitmq')
 const { redis } = require('../configs/redis')
 
 const url = process.env.PRODUCT_SERVICE ? process.env.PRODUCT_SERVICE : process.env.SERVER_URL
@@ -36,10 +36,7 @@ class Controller {
       const payload = await VALIDATORS.create.validateAsync(req.body)
       const order = await Order.create({ ...payload, user: req.user._id, status: 'Created' })
       res.status(200).json({ status: 200, data: 'Created' })
-      producer.send({
-        topic: 'create_order',
-        messages: [{ value: JSON.stringify(order) }]
-      })
+      RabbitMQ.produce('create_order', order)
     } catch (error) {
       next(error)
     }
@@ -65,10 +62,7 @@ class Controller {
       if (order.status != 'Created') throw new E('The order cannot be canceled', 400)
       await order.updateOne({ status: 'Canceled' })
       res.status(200).json({ status: 200, data: 'Canceled' })
-      producer.send({
-        topic: 'cancel_order',
-        messages: [{ value: req.params.id }]
-      })
+      RabbitMQ.produce('cancel_order', order)
     } catch (error) {
       next(error)
     }
@@ -78,7 +72,7 @@ class Controller {
     try {
       if (!req.user) throw new E('You must login', 401)
       const order = await Order.findById(req.params.id)
-      if(!order) throw new E("Order not found", 400)
+      if (!order) throw new E("Order not found", 400)
       if (req.user.role != 'Admin' && order.user != req.user._id) throw new E('Unauthorized', 403)
       res.status(200).json({ status: 200, data: order })
     } catch (error) {
